@@ -1,0 +1,630 @@
+<title>KAON AI 에이전트, 쉽게 이해하기</title>
+<style>
+:root {
+  --bg: #F6F4F0;
+  --surface: #FFFFFF;
+  --surface-2: #FBFAF7;
+  --ink: #23272E;
+  --ink-2: #575E69;
+  --ink-3: #8B929D;
+  --line: #E3DFD7;
+  --accent: #E8590C;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #FCEDE3;
+  --traffic: #3D6FA3;
+  --traffic-soft: #E8EFF6;
+  --news: #2F8C72;
+  --news-soft: #E5F3EE;
+  --welmate: #7C5CB0;
+  --welmate-soft: #EFEAF7;
+  --chat-me: #FDEFE5;
+  --shadow: 0 1px 2px rgba(35,39,46,.06), 0 6px 20px rgba(35,39,46,.07);
+  --shadow-lift: 0 10px 32px rgba(35,39,46,.14);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171C; --surface: #1F2229; --surface-2: #262A33;
+    --ink: #ECEDEF; --ink-2: #A8AEB8; --ink-3: #737A86; --line: #333843;
+    --accent: #F07A38; --accent-ink: #1A1408; --accent-soft: #3A2716;
+    --traffic: #6E9CC9; --traffic-soft: #232D3A;
+    --news: #55AE93; --news-soft: #1E312B;
+    --welmate: #A184D4; --welmate-soft: #2B2438;
+    --chat-me: #38281B;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
+    --shadow-lift: 0 10px 32px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="light"] {
+  --bg: #F6F4F0; --surface: #FFFFFF; --surface-2: #FBFAF7;
+  --ink: #23272E; --ink-2: #575E69; --ink-3: #8B929D; --line: #E3DFD7;
+  --accent: #E8590C; --accent-ink: #FFFFFF; --accent-soft: #FCEDE3;
+  --traffic: #3D6FA3; --traffic-soft: #E8EFF6;
+  --news: #2F8C72; --news-soft: #E5F3EE;
+  --welmate: #7C5CB0; --welmate-soft: #EFEAF7;
+  --chat-me: #FDEFE5;
+  --shadow: 0 1px 2px rgba(35,39,46,.06), 0 6px 20px rgba(35,39,46,.07);
+  --shadow-lift: 0 10px 32px rgba(35,39,46,.14);
+}
+:root[data-theme="dark"] {
+  --bg: #15171C; --surface: #1F2229; --surface-2: #262A33;
+  --ink: #ECEDEF; --ink-2: #A8AEB8; --ink-3: #737A86; --line: #333843;
+  --accent: #F07A38; --accent-ink: #1A1408; --accent-soft: #3A2716;
+  --traffic: #6E9CC9; --traffic-soft: #232D3A;
+  --news: #55AE93; --news-soft: #1E312B;
+  --welmate: #A184D4; --welmate-soft: #2B2438;
+  --chat-me: #38281B;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
+  --shadow-lift: 0 10px 32px rgba(0,0,0,.55);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 22px 90px; }
+
+/* ── Hero ── */
+.hero { padding: 60px 0 14px; }
+.eyebrow {
+  display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .12em;
+  color: var(--accent); border: 1.5px solid var(--accent);
+  border-radius: 99px; padding: 4px 14px; margin-bottom: 18px;
+}
+.hero h1 {
+  font-size: clamp(26px, 4.5vw, 38px); line-height: 1.3; letter-spacing: -.02em;
+  margin: 0 0 14px; font-weight: 800; text-wrap: balance;
+}
+.hero h1 .hl { color: var(--accent); }
+.hero p { max-width: 62ch; color: var(--ink-2); margin: 0; font-size: 16px; }
+
+/* ── Section headers ── */
+section { margin-top: 72px; }
+.sec-head { margin-bottom: 24px; }
+.sec-head .tag {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .14em; color: var(--ink-3);
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.sec-head h2 { font-size: 23px; letter-spacing: -.02em; margin: 0 0 8px; text-wrap: balance; }
+.sec-head p { color: var(--ink-2); margin: 0; max-width: 66ch; }
+
+/* ── Org chart ── */
+.org { display: flex; flex-direction: column; align-items: center; }
+.org-node {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 14px 26px; text-align: center; position: relative;
+}
+.org-node .role { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; color: var(--ink-3); }
+.org-node .who { font-size: 16.5px; font-weight: 800; letter-spacing: -.01em; }
+.org-node .what { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.org-node.desk {
+  border-color: var(--accent); background: var(--accent-soft);
+  box-shadow: var(--shadow-lift);
+}
+.org-node.desk .role { color: var(--accent); }
+.org-stem { width: 2px; height: 26px; background: var(--line); }
+.org-stem.tall { height: 32px; }
+.org-branches { width: 100%; position: relative; padding-top: 26px; }
+.org-branches::before {
+  content: ""; position: absolute; top: 0; left: 16.66%; right: 16.66%;
+  border-top: 2px solid var(--line);
+}
+.org-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.org-cell { display: flex; flex-direction: column; align-items: center; position: relative; }
+.org-cell::before {
+  content: ""; position: absolute; top: -26px; width: 2px; height: 26px; background: var(--line);
+}
+.org-agent {
+  width: 100%; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow);
+  border: 1.5px solid var(--line); border-top: 4px solid var(--ac); padding: 14px 16px; text-align: center;
+}
+.org-agent .avatar {
+  width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 8px;
+  background: var(--ac-soft); display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.org-agent .who { font-weight: 800; font-size: 15px; color: var(--ac); }
+.org-agent .what { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.org-sources { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.org-src {
+  background: var(--surface-2); border: 1px dashed var(--line); border-radius: 8px;
+  font-size: 12px; color: var(--ink-2); padding: 6px 10px; text-align: center;
+}
+.org-legend {
+  margin-top: 30px; display: flex; gap: 10px 22px; flex-wrap: wrap; justify-content: center;
+  font-size: 12.5px; color: var(--ink-2);
+}
+.org-legend b { color: var(--ink); }
+
+/* ── Badge cards ── */
+.badges { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.badge {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px;
+  box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+}
+.badge .lanyard { height: 10px; background: var(--ac); position: relative; }
+.badge .lanyard::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%); top: 100%;
+  width: 46px; height: 12px; background: var(--ac);
+  border-radius: 0 0 10px 10px; opacity: .25;
+}
+.badge .id-top { display: flex; gap: 14px; align-items: center; padding: 22px 22px 14px; }
+.badge .photo {
+  flex: none; width: 62px; height: 62px; border-radius: 14px; font-size: 30px;
+  background: var(--ac-soft); display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--ac);
+}
+.badge .name { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+.badge .dept { font-size: 12px; color: var(--ac); font-weight: 700; letter-spacing: .06em; }
+.badge .desc { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.badge .body { padding: 4px 22px 22px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.duty .duty-t {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .1em; color: var(--ink-3);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.duty ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.duty li {
+  font-size: 13.5px; padding-left: 24px; position: relative;
+}
+.duty li::before {
+  content: "✓"; position: absolute; left: 2px; top: 0;
+  color: var(--ac); font-weight: 800; font-size: 12px;
+}
+.duty.auto li::before { content: "⟳"; font-size: 13px; }
+.badge .stat {
+  margin-top: auto; background: var(--ac-soft); border-radius: 12px;
+  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+}
+.badge .stat .nums { font-variant-numeric: tabular-nums; display: flex; align-items: baseline; gap: 8px; }
+.badge .stat .before { font-size: 17px; color: var(--ink-3); text-decoration: line-through; font-weight: 600; }
+.badge .stat .arrow { color: var(--ac); font-weight: 800; }
+.badge .stat .after { font-size: 25px; font-weight: 800; color: var(--ac); letter-spacing: -.02em; }
+.badge .stat .cap { font-size: 11.5px; color: var(--ink-2); line-height: 1.45; }
+
+/* theme scoping per agent */
+.t-traffic { --ac: var(--traffic); --ac-soft: var(--traffic-soft); }
+.t-news    { --ac: var(--news);    --ac-soft: var(--news-soft); }
+.t-welmate { --ac: var(--welmate); --ac-soft: var(--welmate-soft); }
+.t-desk    { --ac: var(--accent);  --ac-soft: var(--accent-soft); }
+
+/* ── Chat scenario ── */
+.chat-panel {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px;
+  box-shadow: var(--shadow); padding: 26px; max-width: 720px; margin: 0 auto;
+}
+.chat { display: flex; flex-direction: column; gap: 14px; }
+.msg { display: flex; gap: 10px; max-width: 88%; }
+.msg .face {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; font-size: 17px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+}
+.msg .bubble {
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 4px 14px 14px 14px; padding: 10px 14px; font-size: 14px;
+}
+.msg.me { align-self: flex-end; flex-direction: row-reverse; }
+.msg.me .bubble { background: var(--chat-me); border-radius: 14px 4px 14px 14px; }
+.backstage {
+  margin: 4px 0 4px 44px; border-left: 3px solid var(--accent);
+  background: var(--surface-2); border-radius: 0 12px 12px 0; padding: 12px 16px;
+}
+.backstage .bt { font-size: 11.5px; font-weight: 800; letter-spacing: .1em; color: var(--accent); margin-bottom: 8px; }
+.backstage ol { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--ink-2); }
+.backstage .chip {
+  display: inline-block; font-size: 11px; font-weight: 700; color: #fff;
+  border-radius: 99px; padding: 1px 9px; margin-right: 4px; vertical-align: 1px;
+}
+.chip.c-traffic { background: var(--traffic); }
+.chip.c-news { background: var(--news); }
+.chip.c-welmate { background: var(--welmate); }
+.chip.c-desk { background: var(--accent); color: var(--accent-ink); }
+
+/* ── Notifications ── */
+.notis { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.noti {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 16px 18px;
+}
+.noti .from { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.noti .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ac); }
+.noti .app { font-size: 11.5px; font-weight: 800; letter-spacing: .08em; color: var(--ac); }
+.noti .when { font-size: 11px; color: var(--ink-3); margin-left: auto; }
+.noti .msg-t { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+.noti .msg-b { font-size: 13px; color: var(--ink-2); }
+
+/* ── Promise / approval ── */
+.promise {
+  margin-top: 26px; background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 16px; box-shadow: var(--shadow); padding: 20px 24px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.promise .ico {
+  flex: none; width: 44px; height: 44px; border-radius: 12px; font-size: 22px;
+  background: var(--accent-soft); display: flex; align-items: center; justify-content: center;
+}
+.promise b { display: block; margin-bottom: 3px; }
+.promise p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+
+/* ── Roadmap ── */
+.road { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; counter-reset: step; }
+.road-step {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 18px; position: relative; counter-increment: step;
+}
+.road-step::before {
+  content: counter(step); position: absolute; top: -13px; left: 16px;
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+  font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center;
+}
+.road-step.now { border-color: var(--accent); }
+.road-step .rs-when { font-size: 11px; font-weight: 800; letter-spacing: .1em; color: var(--accent); margin: 4px 0 4px; }
+.road-step .rs-t { font-weight: 800; font-size: 14.5px; margin-bottom: 5px; }
+.road-step p { margin: 0; font-size: 12.5px; color: var(--ink-2); }
+
+/* ── Glossary ── */
+details.gloss {
+  margin-top: 26px; background: var(--surface-2); border: 1px dashed var(--line);
+  border-radius: 12px; padding: 14px 18px; font-size: 13px;
+}
+details.gloss summary { cursor: pointer; font-weight: 700; color: var(--ink-2); }
+details.gloss summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.gloss table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.gloss td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.gloss tr:last-child td { border-bottom: 0; }
+.gloss td:first-child { font-weight: 700; white-space: nowrap; }
+.gloss td:nth-child(2) { color: var(--ink-3); white-space: nowrap; }
+
+/* ── Total banner ── */
+.total {
+  margin-top: 26px; border-radius: 18px; background: var(--accent); color: var(--accent-ink);
+  padding: 26px 30px; display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+  box-shadow: var(--shadow-lift);
+}
+.total .big { font-size: clamp(30px, 5vw, 44px); font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.total .cap { font-size: 14px; opacity: .92; max-width: 46ch; }
+
+.theme-btn {
+  position: fixed; right: 18px; top: 18px; z-index: 50;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2);
+  border-radius: 99px; padding: 7px 14px; cursor: pointer; font-size: 12.5px; font-weight: 700;
+  box-shadow: var(--shadow); font-family: inherit;
+}
+.theme-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .org-row { grid-template-columns: 1fr; gap: 22px; }
+  .org-branches::before { display: none; }
+  .org-cell::before { display: none; }
+  .org-branches { padding-top: 0; display: flex; flex-direction: column; gap: 0; }
+  .org-mobile-stem { display: block !important; width: 2px; height: 20px; background: var(--line); margin: 0 auto; }
+}
+.org-mobile-stem { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .badge { transition: transform .18s ease, box-shadow .18s ease; }
+  .badge:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+}
+</style>
+
+<button class="theme-btn" onclick="toggleTheme()">☀ / ☾</button>
+
+<div class="wrap">
+
+<!-- ═══════ Hero ═══════ -->
+<div class="hero">
+  <span class="eyebrow">전사 AI TFT · 마케팅팀 · 2026.07</span>
+  <h1>반복 업무를 대신하는 <span class="hl">AI 팀</span>이 만들어지고 있습니다</h1>
+  <p>어려운 기술 용어 없이 설명하면 이렇습니다 — 우리 팀에 <b>AI 직원 3명</b>과 이들을 총괄하는 <b>AI 안내데스크 1곳</b>이 생기는 것입니다. 여러분은 안내데스크에 말을 걸기만 하면 됩니다.</p>
+</div>
+
+<!-- ═══════ 1. 조직도 ═══════ -->
+<section>
+  <div class="sec-head">
+    <div class="tag">한 장으로 보는 구조</div>
+    <h2>AI 조직도 — 누가 누구에게 일을 시키나</h2>
+    <p>구조는 회사 조직도와 똑같습니다. 여러분의 요청을 안내데스크가 받아서, 그 일을 가장 잘 아는 AI 담당자에게 전달하고, 결과를 모아 하나의 답으로 돌려줍니다.</p>
+  </div>
+
+  <div class="org">
+    <div class="org-node">
+      <div class="role">👤 사용자</div>
+      <div class="who">나 (KAON 구성원)</div>
+      <div class="what">"6월 트래픽 요약해줘" 라고 말만 하면 끝</div>
+    </div>
+    <div class="org-stem tall"></div>
+    <div class="org-node desk t-desk">
+      <div class="role">📥 통합 AI 안내데스크</div>
+      <div class="who">모든 질문이 모이는 하나의 창구</div>
+      <div class="what">질문을 알아듣고 → 담당 AI에게 배분 → 결과를 모아 답변</div>
+    </div>
+    <div class="org-stem"></div>
+    <div class="org-branches">
+      <div class="org-row">
+        <div class="org-cell t-traffic">
+          <div class="org-agent">
+            <div class="avatar">📊</div>
+            <div class="who">트래픽 담당 AI</div>
+            <div class="what">웹사이트 방문 데이터 분석·보고서</div>
+          </div>
+          <div class="org-mobile-stem"></div>
+          <div class="org-sources">
+            <div class="org-src">Google Analytics (사이트 13개)</div>
+            <div class="org-src">지난 2년치 월간 보고서</div>
+          </div>
+        </div>
+        <div class="org-cell t-news">
+          <div class="org-agent">
+            <div class="avatar">📰</div>
+            <div class="who">뉴스 담당 AI</div>
+            <div class="what">경쟁사·업계 소식 수집·요약</div>
+          </div>
+          <div class="org-mobile-stem"></div>
+          <div class="org-sources">
+            <div class="org-src">업계 언론사 뉴스 피드</div>
+            <div class="org-src">경쟁사 홈페이지 · LinkedIn</div>
+          </div>
+        </div>
+        <div class="org-cell t-welmate">
+          <div class="org-agent">
+            <div class="avatar">🤝</div>
+            <div class="who">웰메이트 담당 AI</div>
+            <div class="what">신규입사자 온보딩 프로그램 운영</div>
+          </div>
+          <div class="org-mobile-stem"></div>
+          <div class="org-sources">
+            <div class="org-src">직원 명단 · 조직도</div>
+            <div class="org-src">Outlook 메일 · 설문</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="org-legend">
+      <span><b>실선 박스</b> = AI 담당자 (각자 전문 분야가 다름)</span>
+      <span><b>점선 박스</b> = 각 담당자가 들여다보는 자료·시스템</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ 2. 직원 카드 ═══════ -->
+<section>
+  <div class="sec-head">
+    <div class="tag">AI 직원 소개</div>
+    <h2>세 명의 AI 담당자, 각자 이런 일을 합니다</h2>
+    <p>각 담당자의 일은 두 가지로 나뉩니다. <b>부탁하면 하는 일</b>(질문에 답하고 초안을 만드는 일)과, 부탁하지 않아도 <b>정해진 때에 알아서 하는 일</b>(데이터 수집 같은 반복 작업)입니다.</p>
+  </div>
+
+  <div class="badges">
+    <!-- Traffic -->
+    <div class="badge t-traffic">
+      <div class="lanyard"></div>
+      <div class="id-top">
+        <div class="photo">📊</div>
+        <div>
+          <div class="dept">TRAFFIC · 데이터 분석 담당</div>
+          <div class="name">트래픽 담당 AI</div>
+          <div class="desc">KAON 4개 브랜드 웹사이트의 방문 현황을 꿰고 있는 분석가</div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="duty">
+          <div class="duty-t">💬 부탁하면 하는 일</div>
+          <ul>
+            <li>"지난달 방문자 몇 명이야?" — 사이트별 수치를 바로 답변</li>
+            <li>버튼 하나로 월간 보고서(PDF) 완성</li>
+            <li>방문자가 늘거나 준 <b>이유</b>를 과거 보고서에 비춰 해석</li>
+          </ul>
+        </div>
+        <div class="duty auto">
+          <div class="duty-t">⚙️ 알아서 하는 일</div>
+          <ul>
+            <li>매월 1일, 13개 계정의 데이터를 자동 수집·정리</li>
+            <li>수치가 갑자기 튀면 먼저 알림</li>
+          </ul>
+        </div>
+        <div class="stat">
+          <div class="nums"><span class="before">월 7.5시간</span><span class="arrow">→</span><span class="after">1시간</span></div>
+          <div class="cap">계정 13개를 일일이 열어 엑셀에 옮기던 일이 사라짐</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- News -->
+    <div class="badge t-news">
+      <div class="lanyard"></div>
+      <div class="id-top">
+        <div class="photo">📰</div>
+        <div>
+          <div class="dept">NEWS · 시장 동향 담당</div>
+          <div class="name">뉴스 담당 AI</div>
+          <div class="desc">업계와 경쟁사 소식을 24시간 지켜보는 리서처</div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="duty">
+          <div class="duty-t">💬 부탁하면 하는 일</div>
+          <ul>
+            <li>"이번 주 경쟁사 소식 요약해줘" — 기간·주제별 브리핑</li>
+            <li>월간 시장동향 리포트 <b>초안</b> 작성</li>
+            <li>유관부서에 보낼 뉴스레터 초안 작성</li>
+          </ul>
+        </div>
+        <div class="duty auto">
+          <div class="duty-t">⚙️ 알아서 하는 일</div>
+          <ul>
+            <li>업계 뉴스를 매일 자동 수집, 중복 기사 제거</li>
+            <li>경쟁사·산업·제품별로 자동 분류·태깅</li>
+          </ul>
+        </div>
+        <div class="stat">
+          <div class="nums"><span class="before">월 20시간</span><span class="arrow">→</span><span class="after">2시간</span></div>
+          <div class="cap">매체를 하나하나 돌며 검색·분류하던 일이 사라짐</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Welmate -->
+    <div class="badge t-welmate">
+      <div class="lanyard"></div>
+      <div class="id-top">
+        <div class="photo">🤝</div>
+        <div>
+          <div class="dept">WELMATE · 온보딩 담당</div>
+          <div class="name">웰메이트 담당 AI</div>
+          <div class="desc">신규입사자 버디 프로그램의 전 과정을 챙기는 코디네이터</div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="duty">
+          <div class="duty-t">💬 부탁하면 하는 일</div>
+          <ul>
+            <li>"이번 달 온보딩 현황은?" — 단계별 진행 상황 요약</li>
+            <li>팀장 앞 웰메이트 선정 요청 메일 <b>초안</b> 자동 작성</li>
+            <li>법인별 활동비 지급 명단 정리</li>
+          </ul>
+        </div>
+        <div class="duty auto">
+          <div class="duty-t">⚙️ 알아서 하는 일</div>
+          <ul>
+            <li>신규입사자 등록 → 담당 팀장 자동 확인</li>
+            <li>교육일·설문 마감일이 다가오면 리마인드</li>
+            <li>프로그램 종료 시점에 만족도 설문 발송·회수 추적</li>
+          </ul>
+        </div>
+        <div class="stat">
+          <div class="nums"><span class="before">월 5~6시간</span><span class="arrow">→</span><span class="after">2시간</span></div>
+          <div class="cap">사람 찾고, 메일 쓰고, 엑셀 명단 만들던 일이 줄어듦</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="total">
+    <div class="big">월 33시간 → 5시간</div>
+    <div class="cap">세 가지 업무에 들어가던 시간의 <b>약 85%</b>가 줄어듭니다. 절약된 시간은 수집·정리가 아니라 <b>판단과 기획</b>에 쓰입니다.</div>
+  </div>
+</section>
+
+<!-- ═══════ 3. 시나리오 ═══════ -->
+<section>
+  <div class="sec-head">
+    <div class="tag">작동 방식</div>
+    <h2>질문 하나가 처리되는 과정</h2>
+    <p>안내데스크의 진짜 가치는 <b>여러 담당자의 답을 조합</b>할 때 드러납니다. 아래는 실제로 오갈 대화의 예시입니다.</p>
+  </div>
+
+  <div class="chat-panel">
+    <div class="chat">
+      <div class="msg me">
+        <div class="face">🙋</div>
+        <div class="bubble">지난달 브로드밴드 사이트 방문자가 왜 줄었어?</div>
+      </div>
+
+      <div class="backstage">
+        <div class="bt">🎬 보이지 않는 곳에서 일어나는 일 (수 초 이내)</div>
+        <ol>
+          <li><span class="chip c-desk">안내데스크</span>"수치"와 "이유"가 모두 필요한 질문이라고 판단</li>
+          <li><span class="chip c-traffic">트래픽 AI</span>지난달 방문자 수와 증감률을 조회</li>
+          <li><span class="chip c-news">뉴스 AI</span>같은 기간의 업계·경쟁사 소식을 검색</li>
+          <li><span class="chip c-desk">안내데스크</span>두 답을 근거와 함께 하나로 정리</li>
+        </ol>
+      </div>
+
+      <div class="msg">
+        <div class="face">🤖</div>
+        <div class="bubble">6월 브로드밴드 사이트 방문자는 <b>3,581명으로 전월 대비 늘었지만, 페이지뷰는 25.8% 줄었어요</b>. 같은 기간 업계에서는 경쟁사 A의 신제품 발표가 있었고, 관련 검색 유입이 그쪽으로 분산된 것으로 보입니다. 근거 기사 3건과 상세 수치를 함께 첨부할게요. 📎</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="promise t-desk">
+    <div class="ico">🔒</div>
+    <div>
+      <b>중요한 약속: 실행 버튼은 언제나 사람이 누릅니다</b>
+      <p>AI가 만드는 것은 어디까지나 <b>초안과 요약</b>입니다. 메일 발송, 보고서 배포, 활동비 지급처럼 밖으로 나가는 일은 반드시 담당자가 확인하고 승인해야 실행됩니다. 그리고 인사 정보 같은 민감한 데이터는 웰메이트 담당 AI 안에서만 다루고, 다른 곳에는 인원수·진행률 같은 요약만 전달됩니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ 4. 먼저 알려주는 알림 ═══════ -->
+<section>
+  <div class="sec-head">
+    <div class="tag">기다리지 않아도</div>
+    <h2>물어보기 전에, 먼저 알려줍니다</h2>
+    <p>질문에 답하는 것만이 아닙니다. 각 담당 AI는 챙겨야 할 일이 생기면 Teams나 메일로 먼저 말을 겁니다.</p>
+  </div>
+  <div class="notis">
+    <div class="noti t-traffic">
+      <div class="from"><span class="dot"></span><span class="app">트래픽 담당 AI</span><span class="when">오전 9:00</span></div>
+      <div class="msg-t">로보틱스 사이트 방문 급증 📈</div>
+      <div class="msg-b">어제 방문자가 평소의 3배입니다. 원인 분석을 보시겠어요?</div>
+    </div>
+    <div class="noti t-news">
+      <div class="from"><span class="dot"></span><span class="app">뉴스 담당 AI</span><span class="when">오후 2:30</span></div>
+      <div class="msg-t">경쟁사 주요 발표 감지 🔔</div>
+      <div class="msg-b">Synamedia CEO 교체 소식입니다. 3줄 요약을 준비했어요.</div>
+    </div>
+    <div class="noti t-welmate">
+      <div class="from"><span class="dot"></span><span class="app">웰메이트 담당 AI</span><span class="when">오전 10:00</span></div>
+      <div class="msg-t">설문 마감 D-3 ⏰</div>
+      <div class="msg-b">신규입사자 2명의 설문이 아직 제출되지 않았습니다. 리마인드 메일 초안이 준비되어 있어요.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ 5. 로드맵 ═══════ -->
+<section>
+  <div class="sec-head">
+    <div class="tag">앞으로의 계획</div>
+    <h2>네 단계로 완성됩니다</h2>
+    <p>세 개의 시스템은 이미 만들어져 쓰이고 있습니다. 이제 이들을 한 팀으로 묶는 단계입니다.</p>
+  </div>
+  <div class="road">
+    <div class="road-step now">
+      <div class="rs-when">지금 ~ 1개월</div>
+      <div class="rs-t">기초 다지기</div>
+      <p>세 시스템의 데이터를 한 곳에 모으고, 사람 로그인 없이도 자동 수집이 돌아가도록 정비합니다.</p>
+    </div>
+    <div class="road-step">
+      <div class="rs-when">1 ~ 2개월</div>
+      <div class="rs-t">안내데스크 오픈</div>
+      <p>통합 대화창을 열고, 마케팅팀부터 시범 사용을 시작합니다. 간단한 질문·답변부터.</p>
+    </div>
+    <div class="road-step">
+      <div class="rs-when">2 ~ 3개월</div>
+      <div class="rs-t">더 똑똑하게</div>
+      <p>먼저 알려주는 알림, 보고서 인사이트 자동 작성, 설문 결과 분석 등 "판단이 필요한 일"까지 확장합니다.</p>
+    </div>
+    <div class="road-step">
+      <div class="rs-when">그 이후</div>
+      <div class="rs-t">전사 확산</div>
+      <p>다른 팀의 자동화 과제도 같은 방식으로 "AI 직원"을 채용하듯 안내데스크에 연결합니다.</p>
+    </div>
+  </div>
+
+  <details class="gloss">
+    <summary>🔍 개발팀과 대화할 때 — 이 그림의 용어 대응표</summary>
+    <table>
+      <tr><td>AI 안내데스크</td><td>오케스트레이터 (통합 Agent)</td><td>질문 의도를 파악해 담당 Agent에 배분하는 조정자</td></tr>
+      <tr><td>AI 담당자 3명</td><td>도메인 Agent</td><td>업무 영역별로 독립 개발·운영되는 개별 Agent</td></tr>
+      <tr><td>부탁하면 하는 일</td><td>Tools (MCP 도구)</td><td>안내데스크가 호출하는 표준화된 기능 목록</td></tr>
+      <tr><td>알아서 하는 일</td><td>Jobs (스케줄 배치)</td><td>정해진 시각에 코드로 실행되는 반복 작업</td></tr>
+      <tr><td>참고하는 자료</td><td>Knowledge (RAG)</td><td>과거 보고서 등을 검색해 답변 근거로 쓰는 저장소</td></tr>
+      <tr><td>먼저 알려주는 알림</td><td>이벤트 버스 + 알림 라우터</td><td>Agent가 발행한 이벤트를 Teams/메일로 배달</td></tr>
+    </table>
+  </details>
+</section>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const r = document.documentElement;
+  const cur = r.getAttribute('data-theme') ||
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+</script>
