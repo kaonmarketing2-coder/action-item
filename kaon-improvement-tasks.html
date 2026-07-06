@@ -367,7 +367,23 @@ tr:nth-child(even) td { background: var(--surface-2); }
       <h2 id="mTitle"></h2>
       <button class="close-x" id="mClose" aria-label="닫기">×</button>
     </div>
-    <p class="lever-line" id="mLever"></p>
+    <div class="field">
+      <label for="mTitleInput">과제명</label>
+      <input type="text" id="mTitleInput">
+    </div>
+    <div class="field">
+      <label for="mDesc">부연 설명 <small>— 과제명 아래 작게 표시됩니다</small></label>
+      <input type="text" id="mDesc" placeholder="예: 전략/기획/투자 등">
+    </div>
+    <div class="field">
+      <label for="mLeverSelect">Influence Model 레버</label>
+      <select id="mLeverSelect">
+        <option value="formal">공식적 강화 체계</option>
+        <option value="comm">소통</option>
+        <option value="skill">변화를 위해 필요한 스킬</option>
+        <option value="role">롤 모델링</option>
+      </select>
+    </div>
     <div class="field">
       <label for="mTimeframe">시기 분류</label>
       <select id="mTimeframe">
@@ -1006,9 +1022,10 @@ function addDepartment(name) {
 function openModal(id) {
   editingId = id;
   const t = state.tasks[id];
-  document.getElementById("mTitle").textContent = `${t.num}. ${t.title}`;
-  document.getElementById("mLever").textContent =
-    `레버: ${LEVERS[t.lever].name}${t.desc ? " | " + t.desc : ""}`;
+  document.getElementById("mTitle").textContent = `과제 ${t.num} 편집`;
+  document.getElementById("mTitleInput").value = t.title;
+  document.getElementById("mDesc").value = t.desc || "";
+  document.getElementById("mLeverSelect").value = t.lever;
   document.getElementById("mTimeframe").value = timeframeOf(id);
   pendingDepts = new Set(t.depts);
   renderDeptPicker();
@@ -1050,6 +1067,10 @@ document.getElementById("mNewDept").addEventListener("keydown", e => {
 document.getElementById("mSave").addEventListener("click", () => {
   if (editingId == null) return;
   const t = state.tasks[editingId];
+  const newTitle = document.getElementById("mTitleInput").value.trim();
+  if (newTitle) t.title = newTitle; // 빈 과제명은 기존 이름 유지
+  t.desc = document.getElementById("mDesc").value.trim();
+  t.lever = document.getElementById("mLeverSelect").value;
   // 마스터 목록 순서를 따라 저장해 과제 간 표기 순서를 일관되게 유지
   t.depts = state.departments.filter(d => pendingDepts.has(d));
   const lines = id => document.getElementById(id).value.split("\n").map(s => s.trim()).filter(Boolean);
