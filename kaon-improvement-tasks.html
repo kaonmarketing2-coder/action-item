@@ -206,10 +206,16 @@ main { padding: 20px 24px 60px; max-width: 1480px; margin: 0 auto; }
   color: var(--navy-ink); background: var(--navy);
 }
 .prio-depts { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+.prio-why {
+  font-size: 12px; color: var(--ink-2); margin-top: 5px;
+  padding: 5px 9px; background: var(--surface-2); border-radius: 6px;
+}
+.prio-why::before { content: "근거 "; font-weight: 700; color: var(--accent); font-size: 10.5px; }
 
 /* ── Table view ─────────────────────── */
 .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-table { border-collapse: collapse; width: 100%; min-width: 880px; font-size: 12.5px; }
+table { border-collapse: collapse; width: 100%; min-width: 1480px; font-size: 12.5px; }
+td:nth-child(7), td:nth-child(8), td:nth-child(9) { min-width: 300px; }
 th {
   background: var(--navy); color: var(--navy-ink); text-align: left;
   padding: 9px 12px; font-size: 12px; white-space: nowrap;
@@ -346,7 +352,7 @@ tr:nth-child(even) td { background: var(--surface-2); }
       <table id="summaryTable">
         <thead>
           <tr>
-            <th>우선순위</th><th>No.</th><th>과제명</th><th>레버</th><th>시기</th><th>시행 부서</th><th>과제 수립 시 고려사항</th>
+            <th>우선순위</th><th>No.</th><th>과제명</th><th>레버</th><th>시기</th><th>시행 부서</th><th>주요 현황 및 이슈</th><th>주요 설계 방향</th><th>과제 수립 시 고려사항</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -379,8 +385,24 @@ tr:nth-child(even) td { background: var(--surface-2); }
       </div>
     </div>
     <div class="field">
+      <label for="mIssues">주요 현황 및 이슈 <small>— 한 줄에 하나씩</small></label>
+      <textarea id="mIssues" rows="4"></textarea>
+    </div>
+    <div class="field">
+      <label for="mDesign">주요 설계 방향 <small>— 한 줄에 하나씩</small></label>
+      <textarea id="mDesign" rows="4"></textarea>
+    </div>
+    <div class="field">
       <label for="mConsider">과제 수립 시 고려사항 <small>— 한 줄에 하나씩</small></label>
       <textarea id="mConsider"></textarea>
+    </div>
+    <div class="field">
+      <label for="mRefs">벤치마크 사례</label>
+      <input type="text" id="mRefs">
+    </div>
+    <div class="field">
+      <label for="mRationale">우선순위 선정 근거</label>
+      <input type="text" id="mRationale">
     </div>
     <div class="modal-actions">
       <button class="btn" id="mCancel">취소</button>
@@ -420,117 +442,280 @@ const TIMEFRAMES = {
 };
 
 const DEFAULT_STATE = {
-  dataVersion: 2,
+  dataVersion: 3,
   tasks: {
     1:  { num: 1,  lever: "formal", title: "전사/단위 조직 전략 방향성 구체화", desc: "",
           depts: ["기획", "경영진", "B&C파트"],
+          issues: [
+            "비전·방향성이 CEO와 일부 Staff·리더 대상으로만 한정 소통되어 구성원 간 해석이 상이함",
+            "주력(셋탑) 사업의 사양화가 인식되는 가운데 대체할 비전이 명확히 제시되지 못해 개발 인력의 불안으로 연결",
+            "강한 실행력·추진력은 가온의 강점이나, 그 힘을 결집할 방향성이 모호해 결집에 한계",
+          ],
+          design: [
+            "미션/비전을 Output(숫자 목표)이 아닌 Outcome(지향 상태) 관점으로 재정의 — 구성원의 가슴을 뛰게 하는 '질적' 지향점 제시",
+            "전사 통합 지향점과 정렬된 셋탑·브로드밴드·로봇 등 법인/사업 포트폴리오별 역할(성장/미래) 명확화",
+            "현재의 당해 실적목표 공유 수준을 넘어, 사업별 3년 rolling-over 계획 기반의 연간 중장기 전략 수립 프로세스 정립",
+          ],
           considerations: [
-            "Cascading 워크숍(#3), R&R 정렬(#8) 등 후속 과제의 전제가 되므로 최우선 착수",
-            "전사 전략과 단위 조직 전략 간 정합성을 검증하는 프로세스 정의",
-            "문서화 수준(전략서, OKR 등)과 갱신 주기를 결정해 일회성 산출물화 방지",
-          ] },
+            "구성원에게 영감을 주는 표현을 쓰되 명확·간결하게, 재무지표와 직접 관련 없는 기능/부서까지 아우르는 정의 필요",
+            "전략을 수립·논의할 수 있는 본부장/그룹장 레벨의 역량 제고 병행 (Staff 조직 고도화 #2와 연계)",
+            "Cascading(#3), R&R 정렬(#8) 등 후속 과제의 전제 — 최우선 확정 필요",
+          ],
+          refs: "A사 — 전략 피보팅 시 구성원 공감 과정을 통한 구조조정·리더십 변화 합의 사례",
+          rationale: "진단 Top4 1번 이슈 '전략 방향성 부재로 Alignment 저해'의 직접 해법이자 대부분 과제의 전제 — 최우선 착수" },
     2:  { num: 2,  lever: "formal", title: "미래성장 동력 확보를 위한 Staff 조직 고도화", desc: "전략/기획/투자 등",
           depts: ["기획", "경영진", "B&C파트"],
+          issues: [
+            "CEO를 지원하여 중장기 사업 방향을 설정하고 지속 추진할 전문가 부재",
+            "지속 성장 관점의 포트폴리오 관리·리스크 대응 기능 미흡",
+            "여러 신규 사업을 탐색해 왔으나 집중 투자·실행을 통한 성과 입증 경험 부족",
+          ],
+          design: [
+            "전략·기획·투자 기능의 As-is 역할·역량 진단 → 미래 성장 관점 To-be 역할 정의 ('현상 보고형'에서 '해답 제시형'으로 전환)",
+            "마켓 상위 인재의 파격적 영입으로 혁신 시그널 제시 — 전략/기획/투자 또는 전략적 domain 사업경험 보유 전문가",
+            "외부 영입 인재를 통한 업무 기준 상향화 및 Staff 조직 내 성장 욕구·학습 촉진",
+          ],
           considerations: [
-            "전략·기획·투자 기능의 현재 수준 진단을 선행",
-            "외부 영입 vs 내부 육성 믹스와 채용 리드타임 고려",
-            "조직구조 검토(#9)와 연계하여 이중 개편 방지",
-          ] },
+            "CEO의 의사결정 의존을 보완하는 전략 참모 기능으로 설계 (권한 위임과 연계)",
+            "우수 인재 확보를 위한 예외적 보상 필요 — 기존 보상체계와의 형평성 관리 병행",
+            "외부영입 인재가 장기 잔존하지 못하더라도 조직 혁신·기준 정립 효과만으로 의미 있는 시기",
+            "채용 리드타임을 감안해 착수는 조기에, 전략 방향성(#1) 수립을 지원하는 역량으로 연계",
+          ],
+          refs: "현대오토에버(전략/DX 리더 영입), SK㈜(글로벌 사업 4대 성장 전문가 영입), 동원산업(전략기획 인재 영입)",
+          rationale: "효과는 중장기적이나 #1을 실행할 역량 기반 — 영입 리드타임을 감안해 조기 착수하되 완성은 중장기" },
     3:  { num: 3,  lever: "comm", title: "비전/전략 Cascading 워크숍", desc: "",
           depts: ["기획", "인사(HR)", "각 조직 리더", "B&C파트"],
+          issues: [
+            "전사 미션/비전을 담당 업무와 연계해 해석·전달하는 리더 역할이 미흡해 업무 몰입 저해",
+            "방향성 인식이 상위 직책에서는 비교적 명확하나 하위 직책/구성원 Level로 갈수록 옅어짐",
+          ],
+          design: [
+            "연간 중장기 전략 수립 후 단위조직별 Cascading: CEO·임원 → 임원+그룹장 → 그룹장+팀장 → 팀장+팀원 순차적/단계적 실행",
+            "OKR 기반 워크숍으로 핵심 고객 정의를 명확히 하고, 전사 비전을 실행 가능한 조직/개인 단위 목표로 분해",
+            "리더의 해석·전달(Storytelling) 역량 강화 병행 — 핵심 메시지 카드·1page 전략, 비전스토리텔링 교육, AI 활용 비전 시각화",
+          ],
           considerations: [
-            "전략 방향성 확정(#1) 이후 착수 — 선행과제 의존",
-            "일회성 행사가 아니라 조직 단위 목표 수립과 직접 연결되도록 설계",
-            "리더가 직접 설명하는 방식으로 운영해 롤 모델링 효과 확보",
-          ] },
+            "공감대 확보를 위해 구성원이 직접 참여하는 형태 필수 — 치열한 논의/실습을 통한 공감과 목표 설정 프로세스",
+            "전략 방향성 확정(#1) 이후 착수하고, 이후 연간 전략 수립 프로세스에 정례 편입",
+            "협업이 어려운 조직 문화를 감안, 목적조직 관점의 고객 가치 중심으로 업무를 Align하는 방식 학습",
+          ],
+          refs: "SK머티리얼즈 — 직책자 전체 대상 비전/전략 Cascading 워크숍, AI 활용 비전 Visualization",
+          rationale: "방향성 부재 해소의 실행 단계 — #1 확정 즉시 순차 전개해 전 구성원까지 정렬" },
     4:  { num: 4,  lever: "comm", title: "전사 타운홀 정례화 및 소통 메시지 재정립", desc: "",
           depts: ["커뮤니케이션/경영지원", "CEO", "B&C파트"],
+          issues: [
+            "CEO-구성원 소통 채널이 간헐적/제한적(신년사 수준)이고, 공지 불규칙성으로 구성원 불안감·불만 조성",
+            "의견 수렴 가능한 공식 창구 부재로 블라인드 등 비공식 채널에 의존해 구성원 정서를 확인하는 한계",
+          ],
+          design: [
+            "CEO가 직접 주도하는 가온그룹/브로드밴드/로보틱스 통합 타운홀 월 1회 오프라인 정례화 (불참자용 화상/녹화 제공)",
+            "세션 구성: 회사 소식·사업 이슈 공유, CEO Q&A(초기 사전 익명 질문 → 소통 문화 정착 후 실시간 병행), 조직 간 교류 세션, 인정/칭찬 코너, 연사 초청, 사내 포상",
+            "반복 질의는 HR이 FAQ로 후속 정리/공유, 소통 문화 정착 후 분기 1회 전략/성과 중심 타운홀 별도 검토",
+          ],
           considerations: [
-            "주기(분기 등)와 포맷을 정한 뒤 반드시 지속 — 중단 시 신뢰에 역효과",
-            "일방향 발표가 아닌 Q&A 등 양방향 소통 구조로 설계",
-            "경영 메시지의 일관성(One Voice) 관리 체계 마련",
-          ] },
+            "진단 Top4 '공포를 학습시키는 리더십·침묵하는 구성원' 대응 — 심리적 안전감 회복의 상징적 조치",
+            "정례화 후 중단 시 신뢰에 역효과 — 지속 가능성 담보가 최우선",
+            "초기에는 익명 질문 허용 등 발언 문턱을 낮추고, 경직된 분위기 탈피를 위한 컨텐츠 다변화 필요",
+          ],
+          refs: "크래프톤 KLT(월례 실명 Q&A), 뱅크샐러드 Pit Stop, 컬리 월례 타운홀, 토스 Alignment Day/Week",
+          rationale: "즉시 실행 가능한 Quick win — N사 사례처럼 방향성+소통 집중이 1년 내 개선을 견인, 침묵·불안 이슈에 직접 대응" },
     5:  { num: 5,  lever: "skill", title: "리더 역량 제고/육성 프로그램", desc: "자기·역할인식, 코칭/피드백, 권한위임 등",
           depts: ["인사(HR)", "B&C파트"],
+          issues: [
+            "리더의 성과 드라이브는 작동하나 그 외 리더십 활동(구성원 코칭, 도전 촉진 등)이 미약해 효과적 리더십으로 체감되지 못함",
+            "'바람직한 역할과 역량'에 대한 공통 정의·기준이 없어 리더 스스로 보완점을 파악하기 어렵고 평가·피드백·육성의 준거점도 부재",
+          ],
+          design: [
+            "전사 직책자 대상, 모듈별 1~2일 대면 워크숍 (강의·실습·집단 토론 등 다양한 facilitation)",
+            "4개 모듈: 자기관리(역할 변화 인식·리더관 정립) / 사람관리(성과관리·코칭/피드백·권한위임) / 일관리(전략적 사고·논리적 문제해결) / 조직관리(갈등관리·협업 촉진)",
+            "성과 Drive 강점은 유지/강화하되 인정·경청·코칭·권한위임 역량 보강에 초점",
+          ],
           considerations: [
-            "리더십 Capacity 진단(#7) 결과와 연계한 커리큘럼 설계",
-            "교육 후 현업 적용을 점검하는 팔로업 체계(코칭·피드백) 필수",
-            "리더 평가와의 연계 여부를 사전에 결정",
-          ] },
+            "이론/스킬 학습이 아닌 가온 내 실제 현황(업무·소통 방식) 기반 실습 중심 설계",
+            "리더 레벨(임원·그룹장·팀장)별 역할·기대가 다르므로 레벨별 Customize 필수",
+            "Credo(#6)·진단(#7)으로 '바람직한 리더 역할·역량' 기준이 정의된 후 진행해야 교육·개발의 준거점 확보",
+            "일회성 교육이 아닌 현장 코칭 팔로업 병행 — 교보생명식 약 3개월 현장 실습+단계별 코칭 모델 참고",
+          ],
+          refs: "교보생명(성과관리 프로세스 연계 코칭형 리더 육성), CTR·퍼시스(평가제도 개편 연계 코칭/피드백 교육)",
+          rationale: "리더십의 구조적 개선 수단 — 기준(#6)과 진단(#7)이 갖춰진 뒤 본격화하고 이후 상시 운영" },
     6:  { num: 6,  lever: "role", title: "리더십 Credo 수립", desc: "",
           depts: ["경영진", "인사(HR)", "B&C파트"],
+          issues: [
+            "구성원 인정 부족, Boss-oriented, 의견 차단, 책임 회피·자기방어 등 부정적 리더 행동이 타사 대비 매우 높은 빈도로 확인",
+            "바람직한/지양할 행동 guide가 부재해 리더가 각자의 경험(과거 질책·성과 Drive 중심)에 의존, 부정적 행동이 재생산·고착",
+          ],
+          design: [
+            "금번 조직진단에서 확인된 리더십 이슈를 반드시 포함한 가온 리더 공통 행동 규범(Credo) 정의",
+            "추상적 가치가 아닌 '관찰 가능한 구체적 행동 단위'로 기술 — 예: \"수평적인 소통 문화를 조성한다\"(X) → \"구성원의 의견을 중간에 끊거나 이유 없이 묵살하지 않는다\"(O)",
+            "리더 대상 다면 평가 항목으로 활용해 정기적 모니터링/피드백, CEO Letter·소식지·포스터 등 온/오프라인 전파",
+          ],
           considerations: [
             "톱다운 선언이 아닌 리더들의 참여형 수립으로 내재화 확보",
-            "케티튜드(K-attitude) 등 기존 가치체계와의 정합성 검토",
-            "수립 후 육성 프로그램(#5)·평가 항목으로 연결해 실행력 담보",
-          ] },
+            "실천 가능성 제고를 위해 최대한 구체적 행동 단위로 정의하고 실제 리더십 행동 이슈를 반영",
+            "리더십 진단(#7)의 준거 기준이 되므로 진단에 선행 필요",
+            "케티튜드(K-attitude) 등 기존 가치체계와의 정합성, 일하는 방식(#14)과 연결",
+          ],
+          refs: "구글 리더 6 Checklist(심리적 안전감), Meta 10 Manager Behaviors, 토스 PO 7 Key Skillset",
+          rationale: "리더십 개입 전체(#7 진단 → #5 육성)의 기준점 — 단기간 수립 가능하면서 파급 효과가 큼" },
     7:  { num: 7,  lever: "role", title: "리더십 Capacity 진단 및 Gap closing 전략 수립", desc: "",
           depts: ["인사(HR)", "외부 전문기관", "B&C파트"],
+          issues: [
+            "리더십 역할·역량에 대한 객관적 진단·피드백 기회가 부재해 리더가 자신의 강·약점과 성장 방향을 잡을 근거 부족",
+            "조직별 리더십 편차가 큰데도 개인별 Gap을 파악·관리하지 못해 일괄적/획일적으로 접근",
+            "역량을 객관적으로 축적·진단하는 데이터·시스템이 없어 리더 선발·보임이 경영진의 직관·인상에 의존 → 리더십 편차와 부적합 리더 잔존",
+          ],
+          design: [
+            "가온의 리더십 지향점·역량 모델 구축 — 조직진단에서 활용한 리더십 부정행동 기반 문항으로 개인 단위 행동 진단",
+            "리더 전원 대상 연 1회 정기 진단 + 개인별 보고서·피드백, 결과 해석 Debrief 세션(도입 초기 1회 필수)",
+            "9 Box(현재 리더십 역량 × 미래 Potential) 기반 리더십 Bench 전략 수립 — 승진/재배치/보임 배제/육성",
+          ],
           considerations: [
-            "진단 도구 선정(외부기관 활용 여부)과 비용·기간 산정",
-            "결과 활용 범위(육성용 vs 평가용)를 사전에 명확히 — 평가용으로 쓰면 응답 왜곡 위험",
-            "Gap closing 전략은 육성 프로그램(#5)과 통합 설계",
-          ] },
+            "진단의 주된 목적이 평가/선별이 아닌 리더 자신의 성장과 자기 인식임을 명확히 — 방어감을 낮추고 수용도 확보",
+            "결과 리포트만 전달하면 자의적 해석·오해 발생 — 해석 Debrief 반드시 동반, 주관식은 신분 노출 단어 필터링",
+            "Credo·역량모델(#6) 등 '바람직한 리더' 기준이 정의된 후 진단해야 설득력 확보",
+            "Bench 전략은 허리층 공백·차세대 리더 공백 대응 — 핵심인재 관리(#13)와 연계",
+          ],
+          refs: "이머징 리더십 역량 Framework(진정성·시장주도·기민한 대응·내재적 동기부여), Leadership 9 Box Bench 전략",
+          rationale: "'직관 의존 리더 선발' 이슈의 구조적 해법 — 1차 진단은 단기 착수 가능하나 정례화·Bench 전략까지는 중장기" },
     8:  { num: 8,  lever: "formal", title: "전략 방향성과 Align된 조직 R&R 명확화/명문화", desc: "",
           depts: ["기획", "인사(HR)", "B&C파트"],
+          issues: [
+            "조직별 역할·책임 경계가 모호해 Grey Zone 업무를 아무도 책임지지 않고, 먼저 나선 사람이 떠안는 구조 고착",
+            "책임 소재가 불명확해 무차별 메일 참조·책임 전가 관행 일상화",
+            "협업 담당자를 확인하는 데 여러 단계를 거쳐야 하는 비효율 발생",
+          ],
+          design: [
+            "단위조직별 핵심 R&R 정의서 작성 — 핵심 업무 List-up, 항목별 수행 주체·협력 부서·우선순위, 담당자 초안 작성 후 직상위자 검토/컨펌",
+            "전사 공유 자료로 등록·관리 — 실시간 수정이 용이한 Tool 활용, 격월 필수 업데이트 + 조직 변경 시 수시 업데이트",
+            "조직 간 Gray Zone 업무 발생 시 리더 미팅 고정 아젠다로 조율하는 Process 수립 — 1차 책임자 지정 원칙과 조율 절차 정의",
+            "PI 그룹 RACI·표준화 작업과 연계 — 전면 신규 수립이 아닌 기 진행 작업의 정착·고도화 관점",
+          ],
           considerations: [
-            "전략 방향성 확정(#1) 후 정렬 — 선행과제 의존",
-            "그레이존(중복·공백 업무) 처리 원칙을 함께 수립",
-            "R&R 문서의 관리 주체와 갱신 프로세스를 지정해 사문화 방지",
-          ] },
+            "모든 업무의 촘촘한 규정은 오히려 책임 회피를 야기 — 역할 중복/누락 방지와 Grey Zone 책임 표류 방지 기준에 초점",
+            "지속 업데이트를 가능하게 하는 유연한 Tool·가이드라인 필수 (문서 사문화 방지)",
+            "전략 방향성(#1)과 정렬하고, 조직구조 검토(#9)·협업 시스템(#10)의 입력 자료로 활용",
+          ],
+          refs: "당근마켓·Grow&Better — Notion 기반 조직별 R&R 실시간 공유·주기적 업데이트",
+          rationale: "'관망이 합리적 선택'이 된 구조를 깨는 핵심 — 기존 PI RACI 작업과 연계해 빠른 착수 가능" },
     9:  { num: 9,  lever: "formal", title: "혁신의 실행을 지원할 조직구조 검토", desc: "",
           depts: ["기획", "경영진", "B&C파트"],
+          issues: [
+            "조직이 과도하게 세분화되어 다단의 관리 단계가 존재하는 반면 실무 인력은 상대적으로 부족 — 운영 효율성 저하",
+            "부서 간 R&R 모호로 업무 추진·신규 이슈 발생 시 판단과 실행 지연",
+            "업무 책임 주체가 불명확해 지시가 있어야만 일하거나 부서 간 업무 떠넘기기 반복",
+          ],
+          design: [
+            "현 조직구조 운영 이슈 확인 — 과세분화된 소팀제가 협업 비용·관리 부담을 높이는지 검토, 필요 시 대팀제 전환 등 유사 기능 통합 검토",
+            "양손잡이형 개편 설계 — 기존 사업 조직은 안정적·전문적 수행, 혁신/신사업은 명확한 미션·권한을 가진 별도 목적조직 (Product Owner/과제 Owner 지정, 전담 인력·보고/결재·예산·PMO 지원체계 포함)",
+            "개편된 구조 기준으로 조직별 미션·역할·책임범위·의사결정 권한 재정의, 주요 업무 RACI 명확화 및 End-to-End 프로세스 정리",
+          ],
           considerations: [
-            "조직개편은 구성원 불안을 유발하므로 시점과 커뮤니케이션을 신중히 설계",
-            "R&R 정리(#8) 결과를 입력으로 활용",
-            "정기 조직개편 주기와 연계해 잦은 개편 리스크 최소화",
-          ] },
+            "조직 개편 자체가 목적이 아니라 의사결정 속도·협업·혁신 실행을 높이는 구조인지를 기준으로 검토",
+            "성숙 사업과 신사업이 공존하는 만큼 일률적 구조가 아닌 사업 특성·성장 단계에 맞는 구조 고려",
+            "형식적 Agile로 운영되지 않도록 전담 인력·보고/결재/예산 체계 동반 필요",
+            "개편 불안 관리 — R&R 정리(#8) 결과를 입력으로, 정기 조직개편 시점과 연계하고 커뮤니케이션 신중히",
+          ],
+          refs: "신한라이프(애자일+Backbone 양손잡이 조직), LG유플러스(CDO 중심 Agile 재편), 토스(제품 성장 단계별 구조 진화)",
+          rationale: "파급이 크고 되돌리기 어려운 과제 — R&R 정비(#8)와 전략 확정(#1) 후 신중히 추진" },
     10: { num: 10, lever: "formal", title: "전사 협업 및 정보 공유 시스템 도입", desc: "",
           depts: ["IT/정보시스템", "기획", "B&C파트"],
+          issues: [
+            "협업 담당자 확인에 여러 단계를 거치는 비효율, 팀 간 정보 격차 존재",
+            "신사업에 대한 정보공유가 제한적이어서 구성원이 회사의 미래에 대한 기대감을 낮게 인식",
+          ],
+          design: [
+            "정보공유 원칙(기본 공개 범위 등)을 먼저 정의한 후 도구 선정",
+            "R&R 정의서(#8)·업무 진행 현황을 실시간 공유하는 협업 Tool 구축 — 타 팀 위키를 별도 절차 없이 방문해 업무 진행 상황/맥락 파악 가능한 구조",
+          ],
           considerations: [
-            "도구 도입보다 정보공유 원칙(기본 공개 범위 등)을 먼저 정의",
+            "R&R 공유 Tool(#8)과 통합 설계해 시스템 난립 방지",
             "기존 시스템과의 중복·데이터 이관 계획, 보안 정책 검토",
             "도입 후 정착 지원(부서별 챔피언, 교육)이 없으면 실패 확률 높음",
-          ] },
+          ],
+          refs: "당근마켓 — Notion 기반 전사 위키로 팀 간 정보 격차 해소 (※ 상세 페이지는 원본 자료 미포함, #8 벤치마크 준용)",
+          rationale: "#8 산출물(R&R 정의서)의 기술 기반이자 정보 격차 해소 수단 — R&R 정착과 함께 추진" },
     11: { num: 11, lever: "formal", title: "비효율 업무 파악 및 간소화/폐지", desc: "",
           depts: ["전사 TF", "각 부서", "B&C파트"],
+          issues: [
+            "무차별 메일 참조, 결론 없는 회의 등 책임 분산 관행이 직급을 막론한 조직 전반의 관성으로 자리 잡음",
+            "보고/회의/야근 등 비효율적 업무 방식 상존 (#14 과제의 개선 대상과 동일)",
+          ],
+          design: [
+            "구성원 제안 채널을 통한 비효율 업무 발굴 — 참여감 제고 효과 병행",
+            "폐지/간소화 결정 권한과 판단 기준을 명확히 정의해 실제 실행 담보",
+          ],
           considerations: [
             "Quick win 과제 — 변화의 체감 효과를 조기에 만들기 유리",
-            "구성원 제안 채널로 발굴해 참여감 제고",
-            "폐지 결정 권한과 기준을 명확히 해야 실제 실행됨 · 일하는 방식(#14)과 연계",
-          ] },
+            "관망·책임 회피 관행 타파와 연계 (#8 R&R 명확화가 병행되어야 근본 해소)",
+            "개선 성과를 타운홀(#4)에서 공유해 변화 체감 확산, 일하는 방식(#14) 제도화로 연결",
+          ],
+          refs: "신한라이프 — 불필요한 관료적 의사결정·의전·과도한 보고서를 의도적/계획적으로 찾아내 제거 (※ 상세 페이지는 원본 자료 미포함)",
+          rationale: "Quick win — 구성원이 즉시 체감하는 관행 개선으로 변화 동력 확보, #14의 선행 실행" },
     12: { num: 12, lever: "formal", title: "건전한 경쟁·동기부여·투명성 관점 HR제도 개선", desc: "레벨제 고도화 포함",
           depts: ["인사(HR)", "B&C파트"],
+          issues: [
+            "평가 기준과 결과가 비공개로 운영되어 구성원의 노력/성과가 차등보상으로 연결되지 못하며 사기 저하 야기",
+            "위기 대응을 명분으로 한 보상 억제와 경영진과의 보상 격차 누적 — 시장 내 가온의 처우·성장 매력도 하락",
+          ],
+          design: [
+            "평가 기준·프로세스의 투명화 — 공개 수준의 단계적 확대 로드맵 수립",
+            "성과-보상 연동 구조 재설계 및 레벨제 고도화(성장경로 가시화)",
+          ],
           considerations: [
             "평가·보상 변경은 노무 이슈와 구성원 민감도가 높음 — 충분한 의견수렴 필수",
-            "레벨제 고도화의 목적(성장경로 가시화)을 명확히 커뮤니케이션",
+            "리더의 성과관리·피드백 역량(#5)과 병행해야 제도가 실제 작동 (CTR·퍼시스 사례: 제도 개편 전부터 리더 코칭/피드백 스킬 제고)",
             "인건비 영향 시뮬레이션을 제도 설계 전에 선행",
-          ] },
+            "레벨제 고도화의 목적(성장경로 가시화)을 명확히 커뮤니케이션",
+          ],
+          refs: "CTR(평가체계 개선+5년간 리더 코칭/피드백 교육), 퍼시스(신평가제도 전환 시 팀장 성과관리 역량 제고) (※ 상세 페이지는 원본 자료 미포함, 진단 시사점 기반 보강)",
+          rationale: "진단 Top4 4번 이슈 '작동하지 않는 평가·보상' 직접 대응 — 민감도가 높아 의견수렴을 거쳐 중장기 추진" },
     13: { num: 13, lever: "formal", title: "Retention·동기부여 관점 핵심인재 관리제도 개선", desc: "육성/보상 등",
           depts: ["인사(HR)", "B&C파트"],
+          issues: [
+            "좋은 성과·노력이 인정·보상으로 돌아오지 않는 상황에서 우수 인재를 붙잡을 동기 기반이 약화",
+            "중간 리더가 판단/결정 경험을 축적하지 못하는 학습된 수동성 — 차세대 리더·허리층 공백의 근본 원인",
+          ],
+          design: [
+            "핵심인재 선정 기준 수립 — 공정성·투명성 확보",
+            "보상뿐 아니라 육성·경력경로 중심의 Retention 프로그램 설계",
+            "리더십 진단(#7) 데이터와 연계한 차세대 리더 Pool 관리 (승진/재배치/육성 Bench 전략과 통합)",
+          ],
           considerations: [
-            "핵심인재 선정 기준의 공정성·투명성 확보 — 기준 비공개 시 공정성 시비 위험",
-            "보상뿐 아니라 성장기회(육성·경력경로) 관점을 병행",
+            "선정 기준 비공개 시 공정성 시비 위험 — 기준의 투명한 공유 필요",
             "HR제도 개선(#12)과 정합성 유지",
-          ] },
+            "리더십 Bench 전략(#7)과 통합해 허리층 공백·차세대 리더 공백에 대응",
+          ],
+          refs: "※ 상세 페이지는 원본 자료 미포함 — 진단 시사점(허리층 공백·우수인재 유지 기반 약화) 기반 보강",
+          rationale: "허리층 공백과 인재 이탈 리스크 대응 — #12 제도 개선·#7 Bench 전략과 정합 추진" },
     14: { num: 14, lever: "role", title: "가온만의 일하는 방식 구체화 및 내재화", desc: "보고/회의/야근 등 비효율 개선, 케티튜드(K-attitude)의 행동 단위 구체화 및 제도 연계",
           depts: ["인사(HR)", "조직문화 TF", "B&C파트"],
-          considerations: [
-            "케티튜드를 추상 가치가 아닌 구체적 행동 단위로 번역",
-            "보고·회의·야근 등 관행 개선은 리더의 솔선(#6)이 없으면 정착 불가",
+          issues: [
+            "무차별 메일 참조·결론 없는 회의 등 책임 분산 관행이 조직 전반의 관성으로 고착",
+            "케티튜드(K-attitude)가 추상적 가치 수준에 머물러 행동으로 연결되지 못함",
+          ],
+          design: [
+            "케티튜드를 관찰 가능한 구체적 행동 단위로 번역 (Credo #6의 행동 단위 기술 방법론 준용)",
+            "보고/회의/야근 등 일하는 방식 표준 정의 및 비효율 개선(#11) 성과의 제도화",
             "평가·온보딩 등 제도와 연계해 지속성 확보",
-          ] },
+          ],
+          considerations: [
+            "리더의 솔선(#6 Credo 실천)이 없으면 정착 불가 — 롤 모델링과 반드시 병행",
+            "일회성 캠페인이 아닌 제도(평가·온보딩)와의 연계로 지속성 담보",
+            "타 과제(#4 타운홀, #11 비효율 개선)의 성과를 문화로 내재화하는 총괄 관점 운영",
+          ],
+          refs: "토스 — 문화 소개서(입사 첫날 제공)·DRI(최종의사결정권) 등 일하는 방식의 문서화·내재화 (※ 상세 페이지는 원본 자료 미포함)",
+          rationale: "다른 과제들의 성과를 가온의 문화로 내재화하는 총괄 과제 — 선행 과제 진척과 함께 지속 운영" },
   },
   departments: [
     "경영진", "CEO", "기획", "B&C파트", "인사(HR)", "커뮤니케이션/경영지원",
     "IT/정보시스템", "전사 TF", "조직문화 TF", "각 조직 리더", "각 부서", "외부 전문기관",
   ],
   columns: {
-    short: [1, 8, 3, 11, 6],
-    mid:   [7, 12, 13, 10, 2, 9],
+    short: [1, 3, 8, 6, 11],
+    mid:   [7, 12, 13, 2, 10, 9],
     cont:  [4, 5, 14],
   },
-  priority: [1, 8, 3, 11, 4, 6, 7, 5, 12, 13, 10, 14, 2, 9],
+  priority: [1, 4, 3, 8, 6, 11, 7, 5, 12, 13, 2, 10, 9, 14],
 };
 
 const STORAGE_KEY = "kaon-improvement-tasks-v1";
@@ -563,6 +748,16 @@ function migrate(parsed) {
       if (!t.depts.includes("B&C파트")) t.depts.push("B&C파트");
     });
     parsed.dataVersion = 2;
+  }
+  if (parsed.dataVersion < 3) {
+    // v3: 컨설팅 상세 자료 기반으로 과제 내용(이슈/설계/고려사항/벤치마크)과
+    // 시기·우선순위 제안을 전면 갱신 — 사용자가 편집한 부서 목록/지정만 보존
+    const fresh = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    fresh.departments = parsed.departments;
+    Object.entries(fresh.tasks).forEach(([id, t]) => {
+      if (parsed.tasks[id] && Array.isArray(parsed.tasks[id].depts)) t.depts = parsed.tasks[id].depts;
+    });
+    return fresh;
   }
   return parsed;
 }
@@ -643,6 +838,7 @@ function renderPrio() {
             <span class="tf-chip">${tf.name}</span>
           </div>
           <div class="prio-depts">${t.depts.map(esc).join(" · ")}</div>
+          ${t.rationale ? `<div class="prio-why">${esc(t.rationale)}</div>` : ""}
         </div>
       </div>`;
   }).join("");
@@ -656,10 +852,16 @@ function renderTable() {
       <tr>
         <td class="c-rank">${i + 1}</td>
         <td class="c-num">${t.num}</td>
-        <td class="c-title">${esc(t.title)}${t.desc ? `<div class="d">${esc(t.desc)}</div>` : ""}</td>
+        <td class="c-title">
+          ${esc(t.title)}${t.desc ? `<div class="d">${esc(t.desc)}</div>` : ""}
+          ${t.rationale ? `<div class="d">근거: ${esc(t.rationale)}</div>` : ""}
+          ${t.refs ? `<div class="d">벤치마크: ${esc(t.refs)}</div>` : ""}
+        </td>
         <td>${esc(LEVERS[t.lever].name)}</td>
         <td>${TIMEFRAMES[timeframeOf(id)].name}</td>
         <td>${t.depts.map(esc).join(", ")}</td>
+        <td><ul>${(t.issues || []).map(c => `<li>${esc(c)}</li>`).join("")}</ul></td>
+        <td><ul>${(t.design || []).map(c => `<li>${esc(c)}</li>`).join("")}</ul></td>
         <td><ul>${t.considerations.map(c => `<li>${esc(c)}</li>`).join("")}</ul></td>
       </tr>`;
   }).join("");
@@ -801,7 +1003,11 @@ function openModal(id) {
   pendingDepts = new Set(t.depts);
   renderDeptPicker();
   document.getElementById("mNewDept").value = "";
+  document.getElementById("mIssues").value = (t.issues || []).join("\n");
+  document.getElementById("mDesign").value = (t.design || []).join("\n");
   document.getElementById("mConsider").value = t.considerations.join("\n");
+  document.getElementById("mRefs").value = t.refs || "";
+  document.getElementById("mRationale").value = t.rationale || "";
   overlay.classList.add("open");
 }
 function closeModal() { overlay.classList.remove("open"); editingId = null; }
@@ -836,7 +1042,12 @@ document.getElementById("mSave").addEventListener("click", () => {
   const t = state.tasks[editingId];
   // 마스터 목록 순서를 따라 저장해 과제 간 표기 순서를 일관되게 유지
   t.depts = state.departments.filter(d => pendingDepts.has(d));
-  t.considerations = document.getElementById("mConsider").value.split("\n").map(s => s.trim()).filter(Boolean);
+  const lines = id => document.getElementById(id).value.split("\n").map(s => s.trim()).filter(Boolean);
+  t.issues = lines("mIssues");
+  t.design = lines("mDesign");
+  t.considerations = lines("mConsider");
+  t.refs = document.getElementById("mRefs").value.trim();
+  t.rationale = document.getElementById("mRationale").value.trim();
   const newTf = document.getElementById("mTimeframe").value;
   const curTf = timeframeOf(editingId);
   if (newTf !== curTf) {
