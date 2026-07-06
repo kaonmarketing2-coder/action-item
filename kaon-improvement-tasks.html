@@ -420,100 +420,101 @@ const TIMEFRAMES = {
 };
 
 const DEFAULT_STATE = {
+  dataVersion: 2,
   tasks: {
     1:  { num: 1,  lever: "formal", title: "전사/단위 조직 전략 방향성 구체화", desc: "",
-          depts: ["경영기획", "경영진"],
+          depts: ["기획", "경영진", "B&C파트"],
           considerations: [
             "Cascading 워크숍(#3), R&R 정렬(#8) 등 후속 과제의 전제가 되므로 최우선 착수",
             "전사 전략과 단위 조직 전략 간 정합성을 검증하는 프로세스 정의",
             "문서화 수준(전략서, OKR 등)과 갱신 주기를 결정해 일회성 산출물화 방지",
           ] },
     2:  { num: 2,  lever: "formal", title: "미래성장 동력 확보를 위한 Staff 조직 고도화", desc: "전략/기획/투자 등",
-          depts: ["경영기획", "경영진"],
+          depts: ["기획", "경영진", "B&C파트"],
           considerations: [
             "전략·기획·투자 기능의 현재 수준 진단을 선행",
             "외부 영입 vs 내부 육성 믹스와 채용 리드타임 고려",
             "조직구조 검토(#9)와 연계하여 이중 개편 방지",
           ] },
     3:  { num: 3,  lever: "comm", title: "비전/전략 Cascading 워크숍", desc: "",
-          depts: ["경영기획", "인사(HR)", "각 조직 리더"],
+          depts: ["기획", "인사(HR)", "각 조직 리더", "B&C파트"],
           considerations: [
             "전략 방향성 확정(#1) 이후 착수 — 선행과제 의존",
             "일회성 행사가 아니라 조직 단위 목표 수립과 직접 연결되도록 설계",
             "리더가 직접 설명하는 방식으로 운영해 롤 모델링 효과 확보",
           ] },
     4:  { num: 4,  lever: "comm", title: "전사 타운홀 정례화 및 소통 메시지 재정립", desc: "",
-          depts: ["커뮤니케이션/경영지원", "CEO"],
+          depts: ["커뮤니케이션/경영지원", "CEO", "B&C파트"],
           considerations: [
             "주기(분기 등)와 포맷을 정한 뒤 반드시 지속 — 중단 시 신뢰에 역효과",
             "일방향 발표가 아닌 Q&A 등 양방향 소통 구조로 설계",
             "경영 메시지의 일관성(One Voice) 관리 체계 마련",
           ] },
     5:  { num: 5,  lever: "skill", title: "리더 역량 제고/육성 프로그램", desc: "자기·역할인식, 코칭/피드백, 권한위임 등",
-          depts: ["인사(HR)"],
+          depts: ["인사(HR)", "B&C파트"],
           considerations: [
             "리더십 Capacity 진단(#7) 결과와 연계한 커리큘럼 설계",
             "교육 후 현업 적용을 점검하는 팔로업 체계(코칭·피드백) 필수",
             "리더 평가와의 연계 여부를 사전에 결정",
           ] },
     6:  { num: 6,  lever: "role", title: "리더십 Credo 수립", desc: "",
-          depts: ["경영진", "인사(HR)"],
+          depts: ["경영진", "인사(HR)", "B&C파트"],
           considerations: [
             "톱다운 선언이 아닌 리더들의 참여형 수립으로 내재화 확보",
             "케티튜드(K-attitude) 등 기존 가치체계와의 정합성 검토",
             "수립 후 육성 프로그램(#5)·평가 항목으로 연결해 실행력 담보",
           ] },
     7:  { num: 7,  lever: "role", title: "리더십 Capacity 진단 및 Gap closing 전략 수립", desc: "",
-          depts: ["인사(HR)", "외부 전문기관"],
+          depts: ["인사(HR)", "외부 전문기관", "B&C파트"],
           considerations: [
             "진단 도구 선정(외부기관 활용 여부)과 비용·기간 산정",
             "결과 활용 범위(육성용 vs 평가용)를 사전에 명확히 — 평가용으로 쓰면 응답 왜곡 위험",
             "Gap closing 전략은 육성 프로그램(#5)과 통합 설계",
           ] },
     8:  { num: 8,  lever: "formal", title: "전략 방향성과 Align된 조직 R&R 명확화/명문화", desc: "",
-          depts: ["경영기획", "인사(HR)"],
+          depts: ["기획", "인사(HR)", "B&C파트"],
           considerations: [
             "전략 방향성 확정(#1) 후 정렬 — 선행과제 의존",
             "그레이존(중복·공백 업무) 처리 원칙을 함께 수립",
             "R&R 문서의 관리 주체와 갱신 프로세스를 지정해 사문화 방지",
           ] },
     9:  { num: 9,  lever: "formal", title: "혁신의 실행을 지원할 조직구조 검토", desc: "",
-          depts: ["경영기획", "경영진"],
+          depts: ["기획", "경영진", "B&C파트"],
           considerations: [
             "조직개편은 구성원 불안을 유발하므로 시점과 커뮤니케이션을 신중히 설계",
             "R&R 정리(#8) 결과를 입력으로 활용",
             "정기 조직개편 주기와 연계해 잦은 개편 리스크 최소화",
           ] },
     10: { num: 10, lever: "formal", title: "전사 협업 및 정보 공유 시스템 도입", desc: "",
-          depts: ["IT/정보시스템", "경영기획"],
+          depts: ["IT/정보시스템", "기획", "B&C파트"],
           considerations: [
             "도구 도입보다 정보공유 원칙(기본 공개 범위 등)을 먼저 정의",
             "기존 시스템과의 중복·데이터 이관 계획, 보안 정책 검토",
             "도입 후 정착 지원(부서별 챔피언, 교육)이 없으면 실패 확률 높음",
           ] },
     11: { num: 11, lever: "formal", title: "비효율 업무 파악 및 간소화/폐지", desc: "",
-          depts: ["전사 TF", "각 부서"],
+          depts: ["전사 TF", "각 부서", "B&C파트"],
           considerations: [
             "Quick win 과제 — 변화의 체감 효과를 조기에 만들기 유리",
             "구성원 제안 채널로 발굴해 참여감 제고",
             "폐지 결정 권한과 기준을 명확히 해야 실제 실행됨 · 일하는 방식(#14)과 연계",
           ] },
     12: { num: 12, lever: "formal", title: "건전한 경쟁·동기부여·투명성 관점 HR제도 개선", desc: "레벨제 고도화 포함",
-          depts: ["인사(HR)"],
+          depts: ["인사(HR)", "B&C파트"],
           considerations: [
             "평가·보상 변경은 노무 이슈와 구성원 민감도가 높음 — 충분한 의견수렴 필수",
             "레벨제 고도화의 목적(성장경로 가시화)을 명확히 커뮤니케이션",
             "인건비 영향 시뮬레이션을 제도 설계 전에 선행",
           ] },
     13: { num: 13, lever: "formal", title: "Retention·동기부여 관점 핵심인재 관리제도 개선", desc: "육성/보상 등",
-          depts: ["인사(HR)"],
+          depts: ["인사(HR)", "B&C파트"],
           considerations: [
             "핵심인재 선정 기준의 공정성·투명성 확보 — 기준 비공개 시 공정성 시비 위험",
             "보상뿐 아니라 성장기회(육성·경력경로) 관점을 병행",
             "HR제도 개선(#12)과 정합성 유지",
           ] },
     14: { num: 14, lever: "role", title: "가온만의 일하는 방식 구체화 및 내재화", desc: "보고/회의/야근 등 비효율 개선, 케티튜드(K-attitude)의 행동 단위 구체화 및 제도 연계",
-          depts: ["인사(HR)", "조직문화 TF"],
+          depts: ["인사(HR)", "조직문화 TF", "B&C파트"],
           considerations: [
             "케티튜드를 추상 가치가 아닌 구체적 행동 단위로 번역",
             "보고·회의·야근 등 관행 개선은 리더의 솔선(#6)이 없으면 정착 불가",
@@ -521,7 +522,7 @@ const DEFAULT_STATE = {
           ] },
   },
   departments: [
-    "경영진", "CEO", "경영기획", "인사(HR)", "커뮤니케이션/경영지원",
+    "경영진", "CEO", "기획", "B&C파트", "인사(HR)", "커뮤니케이션/경영지원",
     "IT/정보시스템", "전사 TF", "조직문화 TF", "각 조직 리더", "각 부서", "외부 전문기관",
   ],
   columns: {
@@ -545,12 +546,23 @@ function loadState() {
   } catch (e) { /* storage unavailable or corrupt — fall back */ }
   return JSON.parse(JSON.stringify(DEFAULT_STATE));
 }
-// 이전 버전(부서 마스터 목록 없음)의 저장 데이터를 현재 구조로 보정
+// 이전 버전의 저장 데이터를 현재 구조·내용으로 보정
 function migrate(parsed) {
   if (!Array.isArray(parsed.departments)) {
     const set = new Set(DEFAULT_STATE.departments);
     Object.values(parsed.tasks).forEach(t => (t.depts || []).forEach(d => set.add(d)));
     parsed.departments = [...set];
+  }
+  if ((parsed.dataVersion || 1) < 2) {
+    // v2: 경영기획 → 기획 이름 변경, B&C파트를 부서 목록과 모든 과제에 추가
+    const rename = d => (d === "경영기획" ? "기획" : d);
+    parsed.departments = [...new Set(parsed.departments.map(rename))];
+    if (!parsed.departments.includes("B&C파트")) parsed.departments.push("B&C파트");
+    Object.values(parsed.tasks).forEach(t => {
+      t.depts = [...new Set(t.depts.map(rename))];
+      if (!t.depts.includes("B&C파트")) t.depts.push("B&C파트");
+    });
+    parsed.dataVersion = 2;
   }
   return parsed;
 }
