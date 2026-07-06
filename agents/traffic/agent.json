@@ -1,0 +1,132 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "traffic-agent",
+  "displayName": "트래픽 담당 AI",
+  "description": "KAON Group 4개 브랜드(그룹/브로드밴드/로보틱스/미디어) 웹사이트의 방문 트래픽 데이터를 담당한다. 월간 PV/UV 조회, 전월·전년 대비 비교, 월간 보고서(PDF) 생성, 트래픽 증감 원인 해석을 처리한다. 뉴스·시장동향이나 인사 관련 질문은 담당하지 않는다.",
+  "version": "1.0.0",
+  "owner": {
+    "team": "마케팅팀",
+    "contact": "marketing-traffic@kaon.com"
+  },
+  "endpoint": {
+    "url": "https://traffic-agent.kaon.internal/mcp",
+    "protocol": "mcp",
+    "auth": "service-token"
+  },
+  "permissions": {
+    "allowedGroups": [],
+    "handlesPersonalData": false,
+    "dataSources": ["GA4 Data API (서비스 계정, 13개 계정)", "공용 DB traffic 스키마", "과거 월간 보고서 저장소"]
+  },
+  "tools": [
+    {
+      "name": "get_traffic_summary",
+      "description": "특정 사이트의 특정 월 방문 데이터(PV/UV)와 전월·전년 대비 증감률을 반환한다. '지난달 방문자 몇 명?' 류의 수치 질문에 사용.",
+      "input": {
+        "type": "object",
+        "required": ["month"],
+        "properties": {
+          "site": { "type": "string", "enum": ["group", "broadband", "robotics", "media", "all"], "default": "all" },
+          "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$", "description": "예: 2026-06" }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "sites": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "site": { "type": "string" },
+                "pageviews": { "type": "integer" },
+                "visitors": { "type": "integer" },
+                "momChangePct": { "type": "number", "description": "전월 대비 %" },
+                "yoyChangePct": { "type": "number", "description": "전년 동월 대비 %" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "compare_traffic",
+      "description": "두 기간의 트래픽을 사이트별로 비교한다. '상반기와 작년 상반기 비교해줘' 류의 질문에 사용.",
+      "input": {
+        "type": "object",
+        "required": ["periodA", "periodB"],
+        "properties": {
+          "sites": { "type": "array", "items": { "type": "string" } },
+          "periodA": { "type": "string", "description": "예: 2026-01..2026-06" },
+          "periodB": { "type": "string" }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "comparison": { "type": "array", "items": { "type": "object" } }
+        }
+      }
+    },
+    {
+      "name": "generate_monthly_report",
+      "description": "해당 월의 월간 트래픽 보고서 PDF를 생성하고 다운로드 링크를 반환한다.",
+      "input": {
+        "type": "object",
+        "required": ["month"],
+        "properties": { "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" } }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "reportUrl": { "type": "string", "format": "uri" },
+          "generatedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    {
+      "name": "explain_change",
+      "description": "특정 사이트·월의 트래픽 증감 원인 해석 초안을 작성한다. 과거 2년치 보고서를 참고해 인사이트 코멘트를 생성. 결과는 초안이며 담당자 검수가 필요하다.",
+      "input": {
+        "type": "object",
+        "required": ["site", "month"],
+        "properties": {
+          "site": { "type": "string" },
+          "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+          "externalContext": { "type": "string", "description": "선택. 뉴스 Agent 등에서 받은 같은 기간 업계 동향 요약" }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "insightDraft": { "type": "string" },
+          "references": { "type": "array", "items": { "type": "string" }, "description": "참고한 과거 보고서 목록" }
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "traffic.monthly_ready",
+      "description": "매월 전월 데이터 적재·집계가 끝났을 때 발행. 월간 통합 리포트 조립의 시작 신호.",
+      "defaultChannels": ["teams"]
+    },
+    {
+      "name": "traffic.anomaly",
+      "description": "일간 방문자가 최근 30일 평균 대비 임계치(±3σ)를 벗어나면 발행.",
+      "defaultChannels": ["teams", "email"]
+    }
+  ],
+  "jobs": [
+    {
+      "name": "monthly_ingest",
+      "schedule": "0 6 1 * *",
+      "description": "매월 1일 06시: GA4 Data API로 전월 데이터 수집 → 공용 DB 적재 → 증감률 사전 계산"
+    },
+    {
+      "name": "daily_anomaly_check",
+      "schedule": "0 8 * * *",
+      "description": "매일 08시: 전일 트래픽 이상 여부 점검"
+    }
+  ]
+}

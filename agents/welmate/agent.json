@@ -1,0 +1,161 @@
+{
+  "$schema": "../manifest.schema.json",
+  "name": "welmate-agent",
+  "displayName": "웰메이트 담당 AI",
+  "description": "신규입사자 온보딩 버디(웰메이트) 프로그램의 전 과정을 담당한다. 온보딩 진행 현황 요약, 웰메이트 배정 요청 메일 초안, 엔드서베이 생성·회수 추적, 법인별 활동비 명단 집계, 서베이 결과 분석을 처리한다. 개인정보 취급 Agent로, 외부에는 집계·요약만 반환하고 개인 식별 정보는 웰메이트 OS 화면에서만 조회된다.",
+  "version": "1.0.0",
+  "owner": {
+    "team": "마케팅팀 (피플그룹 협업)",
+    "contact": "welmate-admin@kaon.com"
+  },
+  "endpoint": {
+    "url": "https://welmate-agent.kaon.internal/mcp",
+    "protocol": "mcp",
+    "auth": "service-token"
+  },
+  "permissions": {
+    "allowedGroups": ["welmate-admins", "people-group"],
+    "handlesPersonalData": true,
+    "dataSources": ["직원 명단·조직도 (공용 DB hr 스키마, RLS 격리)", "MS Graph (Outlook 메일 초안)", "설문 시스템"]
+  },
+  "tools": [
+    {
+      "name": "get_onboarding_status",
+      "description": "온보딩 단계별 진행 현황을 집계해 반환한다 (명부등록/배정/교육/서베이/활동비). 개인 식별 정보는 포함하지 않는다.",
+      "input": {
+        "type": "object",
+        "properties": { "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" } }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "counts": {
+            "type": "object",
+            "properties": {
+              "registered": { "type": "integer" },
+              "matched": { "type": "integer" },
+              "inProgram": { "type": "integer" },
+              "surveyPending": { "type": "integer" },
+              "paymentPending": { "type": "integer" }
+            }
+          },
+          "upcomingDeadlines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": { "type": "string", "enum": ["survey", "payment", "training"] },
+                "dday": { "type": "integer" },
+                "count": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "draft_assignment_mail",
+      "description": "신규입사자의 소속 팀장 앞으로 보낼 웰메이트 선정 요청 메일 초안을 작성한다 (입사자 정보·마감일·선정 기준 자동 삽입). 발송은 담당자 승인 후.",
+      "requiresApproval": true,
+      "input": {
+        "type": "object",
+        "required": ["hireId"],
+        "properties": {
+          "hireId": { "type": "string", "description": "신규입사자 내부 ID" },
+          "deadline": { "type": "string", "format": "date" }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "draftId": { "type": "string" },
+          "approvalUrl": { "type": "string", "format": "uri", "description": "웰메이트 OS의 검토·발송 화면 링크" }
+        }
+      }
+    },
+    {
+      "name": "create_end_survey",
+      "description": "프로그램 종료 시점의 엔드서베이 링크를 생성하고 회수 추적을 시작한다 (신규입사자·웰메이트 각 1부).",
+      "input": {
+        "type": "object",
+        "required": ["hireId"],
+        "properties": { "hireId": { "type": "string" } }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "surveyIds": { "type": "array", "items": { "type": "string" } },
+          "dueDate": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    {
+      "name": "compile_payment_list",
+      "description": "해당 월 기준 3개월분 활동비 지급 대상을 법인별(그룹/브로드밴드/로보틱스)로 집계한다. 명단 자체는 권한자만 웰메이트 OS에서 열람. 지급 확정은 담당자 승인 후.",
+      "requiresApproval": true,
+      "input": {
+        "type": "object",
+        "required": ["month"],
+        "properties": { "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" } }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "byEntity": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entity": { "type": "string" },
+                "count": { "type": "integer" },
+                "totalAmount": { "type": "integer" }
+              }
+            }
+          },
+          "listUrl": { "type": "string", "format": "uri", "description": "권한자용 상세 명단 화면 링크" }
+        }
+      }
+    },
+    {
+      "name": "analyze_survey_results",
+      "description": "기간 내 엔드서베이 결과를 분석해 만족도 추이와 개선 키워드 리포트 초안을 생성한다. 자유응답은 익명화하여 인용.",
+      "input": {
+        "type": "object",
+        "required": ["period"],
+        "properties": { "period": { "type": "string", "description": "예: 2026-04..2026-06" } }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "satisfactionTrend": { "type": "array", "items": { "type": "number" } },
+          "topKeywords": { "type": "array", "items": { "type": "string" } },
+          "reportDraft": { "type": "string" }
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "welmate.survey_due",
+      "description": "엔드서베이 마감 D-3에 미제출 건이 있으면 발행. 리마인드 메일 초안 링크 포함.",
+      "defaultChannels": ["teams"]
+    },
+    {
+      "name": "welmate.payment_ready",
+      "description": "매월 활동비 집계 완료 시 발행. 담당자 확인 요청.",
+      "defaultChannels": ["teams", "email"]
+    }
+  ],
+  "jobs": [
+    {
+      "name": "new_hire_watch",
+      "schedule": "0 9 * * 1-5",
+      "description": "평일 09시: 신규입사자 등록 감지 → 조직도에서 팀장 조회 → 배정 요청 메일 초안 생성"
+    },
+    {
+      "name": "monthly_payment_compile",
+      "schedule": "0 9 20 * *",
+      "description": "매월 20일 09시: 3개월분 활동비 지급 대상 집계 → welmate.payment_ready 발행"
+    }
+  ]
+}
