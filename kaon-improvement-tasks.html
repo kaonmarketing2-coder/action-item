@@ -442,7 +442,7 @@ const TIMEFRAMES = {
 };
 
 const DEFAULT_STATE = {
-  dataVersion: 3,
+  dataVersion: 4,
   tasks: {
     1:  { num: 1,  lever: "formal", title: "전사/단위 조직 전략 방향성 구체화", desc: "",
           depts: ["기획", "경영진", "B&C파트"],
@@ -495,12 +495,14 @@ const DEFAULT_STATE = {
             "리더의 해석·전달(Storytelling) 역량 강화 병행 — 핵심 메시지 카드·1page 전략, 비전스토리텔링 교육, AI 활용 비전 시각화",
           ],
           considerations: [
-            "공감대 확보를 위해 구성원이 직접 참여하는 형태 필수 — 치열한 논의/실습을 통한 공감과 목표 설정 프로세스",
-            "전략 방향성 확정(#1) 이후 착수하고, 이후 연간 전략 수립 프로세스에 정례 편입",
-            "협업이 어려운 조직 문화를 감안, 목적조직 관점의 고객 가치 중심으로 업무를 Align하는 방식 학습",
+            "#1 진행 중 병행 준비 — 워크숍 설계, 리더 스토리텔링 교육, 핵심 메시지 카드·1page 전략 템플릿을 먼저 완료 (Cascading의 입력물은 슬로건이 아닌 합의된 전사 전략+단위조직 전략 초안)",
+            "전사 방향성 확정 시점에 최상위 계층(CEO·임원 → 임원+그룹장)부터 순차 착수 — 팀장+팀원까지 완전한 전개는 단위조직 전략 수립 이후",
+            "구성원이 직접 참여하는 치열한 논의/실습 형태 필수 — 침묵·공포 문화에서 형식화되지 않도록 #4 타운홀 등 심리적 안전감 조성 병행",
+            "진단상 중간 리더가 방향성을 해석·전달하지 못하는 상태 — 리더 역량 준비 없이는 '정답 받아적는 자리'가 될 위험",
+            "협업이 어려운 조직 문화를 감안, 목적조직 관점의 고객 가치 중심으로 업무를 Align하는 방식 학습 · 이후 연간 전략 수립 프로세스에 정례 편입",
           ],
           refs: "SK머티리얼즈 — 직책자 전체 대상 비전/전략 Cascading 워크숍, AI 활용 비전 Visualization",
-          rationale: "방향성 부재 해소의 실행 단계 — #1 확정 즉시 순차 전개해 전 구성원까지 정렬" },
+          rationale: "방향성 부재 해소의 실행 단계 — #1과 사실상 하나의 연속 프로그램. #1 진행 중 준비를 병행하고 상위 계층부터 순차 전개" },
     4:  { num: 4,  lever: "comm", title: "전사 타운홀 정례화 및 소통 메시지 재정립", desc: "",
           depts: ["커뮤니케이션/경영지원", "CEO", "B&C파트"],
           issues: [
@@ -757,7 +759,15 @@ function migrate(parsed) {
     Object.entries(fresh.tasks).forEach(([id, t]) => {
       if (parsed.tasks[id] && Array.isArray(parsed.tasks[id].depts)) t.depts = parsed.tasks[id].depts;
     });
-    return fresh;
+    parsed = fresh;
+  }
+  if (parsed.dataVersion < 4) {
+    // v4: #3 Cascading의 고려사항·근거를 '단계적 겹침' 방식으로 정정 (해당 필드만 갱신)
+    if (parsed.tasks[3]) {
+      parsed.tasks[3].considerations = [...DEFAULT_STATE.tasks[3].considerations];
+      parsed.tasks[3].rationale = DEFAULT_STATE.tasks[3].rationale;
+    }
+    parsed.dataVersion = 4;
   }
   return parsed;
 }
