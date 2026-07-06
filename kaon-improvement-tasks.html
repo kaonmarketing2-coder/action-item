@@ -250,6 +250,39 @@ tr:nth-child(even) td { background: var(--surface-2); }
   outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent;
 }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.dept-picker {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  border: 1px solid var(--line); border-radius: 7px;
+  background: var(--surface-2); padding: 10px; min-height: 42px;
+}
+.pick-chip {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+  border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: border-color .15s, background .15s, color .15s;
+}
+.pick-chip:hover { border-color: var(--ink-3); }
+.pick-chip.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pick-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dept-add { display: flex; gap: 6px; margin-top: 8px; }
+.dept-add input {
+  flex: 1; border: 1px solid var(--line); border-radius: 7px;
+  background: var(--surface-2); color: var(--ink);
+  padding: 7px 10px; font-size: 13px; font-family: inherit;
+}
+.dept-add input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.mgr-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; margin-bottom: 14px; }
+.mgr-row {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--line); border-radius: 7px;
+  background: var(--surface-2); padding: 7px 12px; font-size: 13px; font-weight: 600;
+}
+.mgr-row .use-count { margin-left: auto; font-size: 11.5px; font-weight: 400; color: var(--ink-3); }
+.mgr-del {
+  border: none; background: none; color: var(--ink-3); font-size: 16px;
+  cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 5px;
+}
+.mgr-del:hover { color: #C0392B; background: var(--surface); }
+.mgr-empty { color: var(--ink-3); font-size: 12.5px; text-align: center; padding: 14px 0; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn.primary:hover { filter: brightness(1.08); color: #fff; }
 .close-x {
@@ -280,6 +313,7 @@ tr:nth-child(even) td { background: var(--surface-2); }
     </div>
     <div class="toolbar">
       <span class="save-state" id="saveState">자동 저장 켜짐</span>
+      <button class="btn" id="btnDepts">부서 관리</button>
       <button class="btn" id="btnExport">JSON 내보내기</button>
       <button class="btn" id="btnImport">가져오기</button>
       <input type="file" id="fileImport" accept=".json" hidden>
@@ -337,8 +371,12 @@ tr:nth-child(even) td { background: var(--surface-2); }
       </select>
     </div>
     <div class="field">
-      <label for="mDepts">시행 부서 <small>— 쉼표(,)로 구분</small></label>
-      <input type="text" id="mDepts" placeholder="예: 경영기획, 인사(HR)">
+      <label>시행 부서 <small>— 클릭하여 지정/해제</small></label>
+      <div class="dept-picker" id="mDeptPicker"></div>
+      <div class="dept-add">
+        <input type="text" id="mNewDept" placeholder="목록에 없는 부서 추가 (예: 재무팀)">
+        <button class="btn" id="mAddDept">추가</button>
+      </div>
     </div>
     <div class="field">
       <label for="mConsider">과제 수립 시 고려사항 <small>— 한 줄에 하나씩</small></label>
@@ -347,6 +385,21 @@ tr:nth-child(even) td { background: var(--surface-2); }
     <div class="modal-actions">
       <button class="btn" id="mCancel">취소</button>
       <button class="btn primary" id="mSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="deptOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <div class="modal-head">
+      <h2 id="dTitle">부서 관리</h2>
+      <button class="close-x" id="dClose" aria-label="닫기">×</button>
+    </div>
+    <p class="lever-line">부서를 삭제하면 해당 부서가 지정된 모든 과제에서도 함께 제거됩니다.</p>
+    <div class="mgr-list" id="deptMgrList"></div>
+    <div class="dept-add">
+      <input type="text" id="dNewDept" placeholder="새 부서 이름">
+      <button class="btn primary" id="dAddDept">추가</button>
     </div>
   </div>
 </div>
@@ -369,7 +422,7 @@ const TIMEFRAMES = {
 const DEFAULT_STATE = {
   tasks: {
     1:  { num: 1,  lever: "formal", title: "전사/단위 조직 전략 방향성 구체화", desc: "",
-          depts: ["경영기획(주관)", "경영진"],
+          depts: ["경영기획", "경영진"],
           considerations: [
             "Cascading 워크숍(#3), R&R 정렬(#8) 등 후속 과제의 전제가 되므로 최우선 착수",
             "전사 전략과 단위 조직 전략 간 정합성을 검증하는 프로세스 정의",
@@ -397,7 +450,7 @@ const DEFAULT_STATE = {
             "경영 메시지의 일관성(One Voice) 관리 체계 마련",
           ] },
     5:  { num: 5,  lever: "skill", title: "리더 역량 제고/육성 프로그램", desc: "자기·역할인식, 코칭/피드백, 권한위임 등",
-          depts: ["인사(HRD)"],
+          depts: ["인사(HR)"],
           considerations: [
             "리더십 Capacity 진단(#7) 결과와 연계한 커리큘럼 설계",
             "교육 후 현업 적용을 점검하는 팔로업 체계(코칭·피드백) 필수",
@@ -439,7 +492,7 @@ const DEFAULT_STATE = {
             "도입 후 정착 지원(부서별 챔피언, 교육)이 없으면 실패 확률 높음",
           ] },
     11: { num: 11, lever: "formal", title: "비효율 업무 파악 및 간소화/폐지", desc: "",
-          depts: ["전사 TF(경영기획 주관)", "각 부서"],
+          depts: ["전사 TF", "각 부서"],
           considerations: [
             "Quick win 과제 — 변화의 체감 효과를 조기에 만들기 유리",
             "구성원 제안 채널로 발굴해 참여감 제고",
@@ -467,6 +520,10 @@ const DEFAULT_STATE = {
             "평가·온보딩 등 제도와 연계해 지속성 확보",
           ] },
   },
+  departments: [
+    "경영진", "CEO", "경영기획", "인사(HR)", "커뮤니케이션/경영지원",
+    "IT/정보시스템", "전사 TF", "조직문화 TF", "각 조직 리더", "각 부서", "외부 전문기관",
+  ],
   columns: {
     short: [1, 8, 3, 11, 6],
     mid:   [7, 12, 13, 10, 2, 9],
@@ -483,10 +540,19 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.tasks && parsed.columns && parsed.priority) return parsed;
+      if (parsed && parsed.tasks && parsed.columns && parsed.priority) return migrate(parsed);
     }
   } catch (e) { /* storage unavailable or corrupt — fall back */ }
   return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+// 이전 버전(부서 마스터 목록 없음)의 저장 데이터를 현재 구조로 보정
+function migrate(parsed) {
+  if (!Array.isArray(parsed.departments)) {
+    const set = new Set(DEFAULT_STATE.departments);
+    Object.values(parsed.tasks).forEach(t => (t.depts || []).forEach(d => set.add(d)));
+    parsed.departments = [...set];
+  }
+  return parsed;
 }
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
@@ -694,6 +760,25 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
 });
 
+let pendingDepts = new Set();
+
+function renderDeptPicker() {
+  const picker = document.getElementById("mDeptPicker");
+  picker.innerHTML = state.departments.map(d => `
+    <button type="button" class="pick-chip ${pendingDepts.has(d) ? "selected" : ""}" data-dept="${esc(d)}">${esc(d)}</button>
+  `).join("");
+}
+
+function addDepartment(name) {
+  name = name.trim();
+  if (!name) return null;
+  if (!state.departments.includes(name)) {
+    state.departments.push(name);
+    saveState();
+  }
+  return name;
+}
+
 function openModal(id) {
   editingId = id;
   const t = state.tasks[id];
@@ -701,10 +786,11 @@ function openModal(id) {
   document.getElementById("mLever").textContent =
     `레버: ${LEVERS[t.lever].name}${t.desc ? " | " + t.desc : ""}`;
   document.getElementById("mTimeframe").value = timeframeOf(id);
-  document.getElementById("mDepts").value = t.depts.join(", ");
+  pendingDepts = new Set(t.depts);
+  renderDeptPicker();
+  document.getElementById("mNewDept").value = "";
   document.getElementById("mConsider").value = t.considerations.join("\n");
   overlay.classList.add("open");
-  document.getElementById("mDepts").focus();
 }
 function closeModal() { overlay.classList.remove("open"); editingId = null; }
 
@@ -712,10 +798,32 @@ document.getElementById("mClose").addEventListener("click", closeModal);
 document.getElementById("mCancel").addEventListener("click", closeModal);
 overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
 
+document.getElementById("mDeptPicker").addEventListener("click", e => {
+  const chip = e.target.closest(".pick-chip");
+  if (!chip) return;
+  const d = chip.dataset.dept;
+  pendingDepts.has(d) ? pendingDepts.delete(d) : pendingDepts.add(d);
+  renderDeptPicker();
+});
+function addDeptFromTaskModal() {
+  const input = document.getElementById("mNewDept");
+  const name = addDepartment(input.value);
+  if (!name) return;
+  pendingDepts.add(name);
+  input.value = "";
+  renderDeptPicker();
+  input.focus();
+}
+document.getElementById("mAddDept").addEventListener("click", addDeptFromTaskModal);
+document.getElementById("mNewDept").addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); addDeptFromTaskModal(); }
+});
+
 document.getElementById("mSave").addEventListener("click", () => {
   if (editingId == null) return;
   const t = state.tasks[editingId];
-  t.depts = document.getElementById("mDepts").value.split(",").map(s => s.trim()).filter(Boolean);
+  // 마스터 목록 순서를 따라 저장해 과제 간 표기 순서를 일관되게 유지
+  t.depts = state.departments.filter(d => pendingDepts.has(d));
   t.considerations = document.getElementById("mConsider").value.split("\n").map(s => s.trim()).filter(Boolean);
   const newTf = document.getElementById("mTimeframe").value;
   const curTf = timeframeOf(editingId);
@@ -724,6 +832,68 @@ document.getElementById("mSave").addEventListener("click", () => {
     state.columns[newTf].push(editingId);
   }
   saveState(); renderAll(); closeModal();
+});
+
+/* ── Department manager ────────────── */
+const deptOverlay = document.getElementById("deptOverlay");
+
+function deptUsage(name) {
+  return Object.values(state.tasks).filter(t => t.depts.includes(name)).length;
+}
+function renderDeptMgr() {
+  const list = document.getElementById("deptMgrList");
+  if (!state.departments.length) {
+    list.innerHTML = `<div class="mgr-empty">등록된 부서가 없습니다. 아래에서 추가하세요.</div>`;
+    return;
+  }
+  list.innerHTML = state.departments.map(d => {
+    const n = deptUsage(d);
+    return `
+      <div class="mgr-row">
+        <span>${esc(d)}</span>
+        <span class="use-count">${n ? `${n}개 과제에서 사용 중` : "미사용"}</span>
+        <button class="mgr-del" data-dept="${esc(d)}" aria-label="${esc(d)} 삭제">×</button>
+      </div>`;
+  }).join("");
+}
+
+document.getElementById("btnDepts").addEventListener("click", () => {
+  renderDeptMgr();
+  document.getElementById("dNewDept").value = "";
+  deptOverlay.classList.add("open");
+  document.getElementById("dNewDept").focus();
+});
+document.getElementById("dClose").addEventListener("click", () => deptOverlay.classList.remove("open"));
+deptOverlay.addEventListener("click", e => { if (e.target === deptOverlay) deptOverlay.classList.remove("open"); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && deptOverlay.classList.contains("open")) deptOverlay.classList.remove("open");
+});
+
+function addDeptFromMgr() {
+  const input = document.getElementById("dNewDept");
+  if (!addDepartment(input.value)) return;
+  input.value = "";
+  renderDeptMgr(); renderAll();
+  input.focus();
+}
+document.getElementById("dAddDept").addEventListener("click", addDeptFromMgr);
+document.getElementById("dNewDept").addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); addDeptFromMgr(); }
+});
+
+document.getElementById("deptMgrList").addEventListener("click", e => {
+  const btn = e.target.closest(".mgr-del");
+  if (!btn) return;
+  const name = btn.dataset.dept;
+  const n = deptUsage(name);
+  const msg = n
+    ? `'${name}' 부서를 삭제하면 ${n}개 과제에서도 함께 제거됩니다. 삭제할까요?`
+    : `'${name}' 부서를 삭제할까요?`;
+  if (!confirm(msg)) return;
+  state.departments = state.departments.filter(d => d !== name);
+  Object.values(state.tasks).forEach(t => { t.depts = t.depts.filter(d => d !== name); });
+  pendingDepts.delete(name);
+  saveState(); renderDeptMgr(); renderAll();
 });
 
 /* ── Tabs ──────────────────────────── */
@@ -754,7 +924,7 @@ document.getElementById("fileImport").addEventListener("change", e => {
     try {
       const parsed = JSON.parse(reader.result);
       if (!parsed.tasks || !parsed.columns || !parsed.priority) throw new Error("형식 오류");
-      state = parsed;
+      state = migrate(parsed);
       saveState(); renderAll();
     } catch (err) {
       alert("가져오기에 실패했습니다. 이 도구에서 내보낸 JSON 파일인지 확인해 주세요.");
