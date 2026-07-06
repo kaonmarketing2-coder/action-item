@@ -9,7 +9,7 @@
 | 파일 | 역할 |
 |---|---|
 | `manifest.schema.json` | 공통 규격 (모든 agent.json이 지켜야 할 양식) |
-| `traffic/agent.json` | 트래픽 담당 AI 작성 예시 |
+| `traffic/agent.json` | 채널 성과 담당 AI 작성 예시 (웹사이트 + 자사 LinkedIn · 수동 업로드 데이터 소스 예시 포함) |
 | `news/agent.json` | 뉴스 담당 AI 작성 예시 |
 | `welmate/agent.json` | 웰메이트 담당 AI 작성 예시 (개인정보 취급 Agent 예시) |
 
