@@ -1,0 +1,307 @@
+<title>KAON Agent 등록부</title>
+<style>
+:root {
+  --bg: #F6F4F0; --surface: #FFFFFF; --surface-2: #FBFAF7;
+  --ink: #23272E; --ink-2: #575E69; --ink-3: #8B929D; --line: #E3DFD7;
+  --accent: #E8590C; --accent-ink: #FFFFFF; --accent-soft: #FCEDE3;
+  --traffic: #3D6FA3; --traffic-soft: #E8EFF6;
+  --news: #2F8C72; --news-soft: #E5F3EE;
+  --welmate: #7C5CB0; --welmate-soft: #EFEAF7;
+  --warn: #B4831C; --warn-soft: #FBF3DF;
+  --shadow: 0 1px 2px rgba(35,39,46,.06), 0 6px 20px rgba(35,39,46,.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171C; --surface: #1F2229; --surface-2: #262A33;
+    --ink: #ECEDEF; --ink-2: #A8AEB8; --ink-3: #737A86; --line: #333843;
+    --accent: #F07A38; --accent-ink: #1A1408; --accent-soft: #3A2716;
+    --traffic: #6E9CC9; --traffic-soft: #232D3A;
+    --news: #55AE93; --news-soft: #1E312B;
+    --welmate: #A184D4; --welmate-soft: #2B2438;
+    --warn: #D9A845; --warn-soft: #33290F;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="light"] {
+  --bg: #F6F4F0; --surface: #FFFFFF; --surface-2: #FBFAF7;
+  --ink: #23272E; --ink-2: #575E69; --ink-3: #8B929D; --line: #E3DFD7;
+  --accent: #E8590C; --accent-ink: #FFFFFF; --accent-soft: #FCEDE3;
+  --traffic: #3D6FA3; --traffic-soft: #E8EFF6;
+  --news: #2F8C72; --news-soft: #E5F3EE;
+  --welmate: #7C5CB0; --welmate-soft: #EFEAF7;
+  --warn: #B4831C; --warn-soft: #FBF3DF;
+  --shadow: 0 1px 2px rgba(35,39,46,.06), 0 6px 20px rgba(35,39,46,.07);
+}
+:root[data-theme="dark"] {
+  --bg: #15171C; --surface: #1F2229; --surface-2: #262A33;
+  --ink: #ECEDEF; --ink-2: #A8AEB8; --ink-3: #737A86; --line: #333843;
+  --accent: #F07A38; --accent-ink: #1A1408; --accent-soft: #3A2716;
+  --traffic: #6E9CC9; --traffic-soft: #232D3A;
+  --news: #55AE93; --news-soft: #1E312B;
+  --welmate: #A184D4; --welmate-soft: #2B2438;
+  --warn: #D9A845; --warn-soft: #33290F;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+code {
+  font-family: "SF Mono", ui-monospace, Consolas, monospace; font-size: .85em;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px;
+}
+.topbar {
+  background: var(--surface); border-bottom: 1px solid var(--line);
+  padding: 16px 24px; position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.topbar h1 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
+.topbar .sub { color: var(--ink-3); font-size: 12px; }
+.topbar .spacer { flex: 1; }
+.theme-btn {
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-2);
+  border-radius: 99px; padding: 6px 12px; cursor: pointer; font-size: 12px; font-weight: 700; font-family: inherit;
+}
+.wrap { max-width: 1060px; margin: 0 auto; padding: 24px 22px 80px; }
+
+.status-banner {
+  border: 1.5px solid var(--warn); background: var(--warn-soft); border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 22px; display: flex; gap: 12px; align-items: flex-start; font-size: 13px;
+}
+.status-banner b { color: var(--warn); }
+
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 26px; }
+.stat-tile {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: var(--shadow); padding: 14px 16px;
+}
+.stat-tile .n { font-size: 26px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.stat-tile .l { font-size: 12px; color: var(--ink-2); }
+
+.agent-card {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 16px;
+  box-shadow: var(--shadow); margin-bottom: 22px; overflow: hidden;
+}
+.agent-head {
+  padding: 18px 22px; border-bottom: 1px solid var(--line);
+  border-top: 5px solid var(--ac); display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;
+}
+.agent-head .avatar {
+  flex: none; width: 52px; height: 52px; border-radius: 13px; font-size: 26px;
+  background: var(--ac-soft); border: 1.5px solid var(--ac);
+  display: flex; align-items: center; justify-content: center;
+}
+.agent-head .id { flex: 1; min-width: 240px; }
+.agent-head .nm { font-size: 17px; font-weight: 800; }
+.agent-head .nm code { font-weight: 400; margin-left: 8px; }
+.agent-head .meta { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.agent-head .desc { font-size: 13px; color: var(--ink-2); margin-top: 8px; max-width: 78ch; }
+.badges-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.b {
+  font-size: 11px; font-weight: 700; border-radius: 99px; padding: 3px 10px;
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2); white-space: nowrap;
+}
+.b.pii { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.b.ver { background: var(--ac-soft); border-color: var(--ac); color: var(--ac); }
+
+.agent-body { padding: 8px 22px 20px; }
+.sec-t {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .1em; color: var(--ink-3);
+  margin: 18px 0 8px; display: flex; align-items: center; gap: 6px;
+}
+.sec-t .cnt { background: var(--ac-soft); color: var(--ac); border-radius: 99px; padding: 0 8px; font-size: 11px; }
+
+.tool-table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px; }
+th { text-align: left; color: var(--ink-3); font-size: 11px; letter-spacing: .06em; padding: 6px 10px; border-bottom: 1.5px solid var(--line); white-space: nowrap; }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.chip {
+  display: inline-block; font-size: 11px; border: 1px solid var(--line); background: var(--surface-2);
+  border-radius: 6px; padding: 1px 7px; margin: 1px 2px 1px 0; font-family: "SF Mono", ui-monospace, Consolas, monospace; white-space: nowrap;
+}
+.chip.req { border-color: var(--ac); color: var(--ac); }
+.approval {
+  display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .04em;
+  background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn);
+  border-radius: 6px; padding: 1px 7px; margin-left: 6px; vertical-align: 1px; white-space: nowrap;
+}
+.list-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+.mini {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 13px; font-size: 12.5px;
+}
+.mini .mt { font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.mini .md { color: var(--ink-2); margin-top: 3px; }
+.mini .sched { font-size: 11px; color: var(--ink-3); }
+.t-traffic { --ac: var(--traffic); --ac-soft: var(--traffic-soft); }
+.t-news    { --ac: var(--news);    --ac-soft: var(--news-soft); }
+.t-welmate { --ac: var(--welmate); --ac-soft: var(--welmate-soft); }
+.foot { margin-top: 8px; font-size: 12px; color: var(--ink-3); }
+</style>
+
+<div class="topbar">
+  <h1>🗂 KAON Agent 등록부</h1>
+  <span class="sub">agents/*/agent.json 매니페스트를 그대로 읽어 그린 화면 · 2026.07</span>
+  <span class="spacer"></span>
+  <button class="theme-btn" onclick="toggleTheme()">☀ / ☾</button>
+</div>
+
+<div class="wrap">
+  <div class="status-banner">
+    <span style="font-size:18px">🏗️</span>
+    <div><b>현재 상태: 설계 완료 · 구현 대기.</b> 이 화면의 기능들은 아직 동작하는 소프트웨어가 아니라, 개발팀이 구현할 <b>사양서(agent.json)</b>의 내용입니다. 안내데스크(통합 Agent)가 완성되면 정확히 이 등록부의 매니페스트를 읽어 각 Agent를 인식하게 됩니다 — 이 페이지가 그 원리의 미리보기입니다.</div>
+  </div>
+
+  <div class="summary" id="summary"></div>
+  <div id="agents"></div>
+
+  <p class="foot">※ 원본: 저장소 <code>agents/</code> 폴더. 매니페스트가 수정되면 이 페이지의 데이터 블록도 함께 갱신해야 합니다. <span class="approval">🔒 승인 필요</span> 표시는 실행 전 담당자 승인이 필수인 기능(메일 발송, 지급 등)입니다.</p>
+</div>
+
+<script>
+// ── agents/*/agent.json 원본 (요약 없이 그대로 내장) ──
+const AGENTS = [
+{
+  icon: "📊", theme: "t-traffic",
+  name: "traffic-agent", displayName: "채널 성과 담당 AI", version: "1.1.0",
+  description: "KAON의 자사 채널 성과 데이터를 담당한다. 대상 채널: ① 웹사이트 — KAON Group 4개 브랜드(그룹/브로드밴드/로보틱스/미디어) 사이트의 방문 트래픽(GA4 자동 수집), ② 자사 LinkedIn 페이지 — 팔로워·노출·참여 성과(월 1회 관리자 내보내기 파일 적재). 경쟁사 LinkedIn 게시 내용·업계 뉴스는 뉴스 담당 AI 소관.",
+  owner: { team: "마케팅팀", contact: "marketing-traffic@kaon.com" },
+  handlesPersonalData: false,
+  dataSources: ["GA4 Data API (서비스 계정, 13개 계정)", "LinkedIn 성과 내보내기 파일 (월 1회 수동 업로드)", "공용 DB channels 스키마", "과거 월간 보고서 저장소"],
+  tools: [
+    { name: "get_traffic_summary", desc: "특정 사이트·월의 웹 방문 데이터(PV/UV)와 전월·전년 대비 증감률 반환", input: [["site",0],["month",1]], output: ["sites[]"] },
+    { name: "get_linkedin_summary", desc: "자사 LinkedIn 페이지의 월간 성과(팔로워·노출·참여율·방문). 미적재 월이면 그 상태를 알려줌", input: [["month",1]], output: ["followers","followerChange","impressions","engagementRatePct","dataStatus"] },
+    { name: "compare_channels", desc: "웹사이트 + LinkedIn 성과를 한 번에 묶은 채널 통합 요약", input: [["month",1]], output: ["web","linkedin","highlights[]"] },
+    { name: "ingest_linkedin_export", desc: "담당자가 업로드한 LinkedIn 월간 내보내기 파일(xlsx/csv)을 검증 후 적재. 형식 오류 시 사유 반환", input: [["fileId",1],["month",1]], output: ["status","rowsIngested","warnings[]"] },
+    { name: "compare_traffic", desc: "두 기간의 웹 트래픽을 사이트별로 비교", input: [["sites",0],["periodA",1],["periodB",1]], output: ["comparison[]"] },
+    { name: "generate_monthly_report", desc: "월간 채널 성과 보고서 PDF 생성 (기본 웹+LinkedIn 통합, LinkedIn 미적재 시 웹만)", input: [["month",1],["includeLinkedin",0]], output: ["reportUrl","sectionsIncluded[]"] },
+    { name: "explain_change", desc: "채널·월의 성과 증감 원인 해석 초안 작성 (과거 2년치 보고서 참고, 담당자 검수 필요)", input: [["channel",1],["month",1],["externalContext",0]], output: ["insightDraft","references[]"] }
+  ],
+  events: [
+    { name: "traffic.monthly_ready", desc: "전월 웹 데이터 적재·집계 완료 신호", ch: ["teams"] },
+    { name: "traffic.anomaly", desc: "일간 웹 방문자가 30일 평균 대비 임계치(±3σ) 초과 시", ch: ["teams","email"] },
+    { name: "traffic.linkedin_export_due", desc: "전월 LinkedIn 파일 미적재 시 담당자에게 업로드 리마인드", ch: ["teams"] },
+    { name: "traffic.linkedin_ingested", desc: "LinkedIn 월간 데이터 적재 완료 신호", ch: ["teams"] }
+  ],
+  jobs: [
+    { name: "monthly_ingest", cron: "0 6 1 * *", desc: "매월 1일 06시: GA4로 전월 웹 데이터 수집·적재·증감률 계산" },
+    { name: "daily_anomaly_check", cron: "0 8 * * *", desc: "매일 08시: 전일 웹 트래픽 이상 여부 점검" },
+    { name: "linkedin_export_reminder", cron: "0 9 2 * *", desc: "매월 2일 09시: LinkedIn 파일 미적재 시 리마인드 발행" }
+  ]
+},
+{
+  icon: "📰", theme: "t-news",
+  name: "news-agent", displayName: "뉴스 담당 AI", version: "1.0.0",
+  description: "방송·통신 산업과 경쟁사(Sagemcom, Vantiva, CommScope, SDMC, Strong/Skyworth, ZTE 등) 뉴스의 수집·분류·요약을 담당한다. 기간·주제별 검색과 브리핑, 월간 Trend Report 초안, 유관부서 뉴스레터 초안을 처리. 자사 트래픽 수치·인사 질문은 담당하지 않음.",
+  owner: { team: "마케팅팀", contact: "marketing-news@kaon.com" },
+  handlesPersonalData: false,
+  dataSources: ["산업 전문 매체 RSS 피드", "경쟁사 홈페이지/Press Release", "LinkedIn 채널", "공용 DB news 스키마"],
+  tools: [
+    { name: "search_news", desc: "수집된 뉴스를 키워드·분류·기업·기간으로 검색", input: [["query",0],["category",0],["product",0],["company",0],["period",0]], output: ["articles[]","totalCount"] },
+    { name: "summarize_period", desc: "특정 기간의 주요 뉴스를 주제별로 묶어 요약 브리핑 생성 (타 Agent에 업계 컨텍스트 제공용으로도 사용)", input: [["period",1],["topic",0]], output: ["summary","keyArticles[]"] },
+    { name: "draft_trend_report", desc: "월간 시장동향 Trend Report 초안 생성 (과거 리포트 구성·문체 준수, 담당자 검수 필요)", input: [["month",1]], output: ["draftUrl","highlights[]"] },
+    { name: "draft_digest_mail", desc: "유관부서에 보낼 주요 뉴스 요약 메일 초안 작성 — 발송은 승인 후", approval: true, input: [["period",1],["recipients",1]], output: ["draftId","subject","body","approvalUrl"] }
+  ],
+  events: [
+    { name: "news.important", desc: "경쟁사 중대 발표(CEO 교체, M&A, 대형 수주 등) 감지 시 3줄 요약과 함께 발행", ch: ["teams"] }
+  ],
+  jobs: [
+    { name: "rss_ingest", cron: "0 * * * *", desc: "매시 정각: RSS 수집 → 중복 제거 → 신규 기사 분류·태깅" },
+    { name: "weekly_digest_prepare", cron: "0 9 * * 1", desc: "매주 월요일 09시: 지난주 다이제스트 초안 생성 → 검수 요청" }
+  ]
+},
+{
+  icon: "🤝", theme: "t-welmate",
+  name: "welmate-agent", displayName: "웰메이트 담당 AI", version: "1.0.0",
+  description: "신규입사자 온보딩 버디(웰메이트) 프로그램 전 과정 담당. 진행 현황 요약, 배정 요청 메일 초안, 엔드서베이 생성·회수 추적, 법인별 활동비 집계, 서베이 결과 분석. 개인정보 취급 Agent — 외부에는 집계·요약만 반환, 개인 식별 정보는 웰메이트 OS 화면에서만.",
+  owner: { team: "마케팅팀 (피플그룹 협업)", contact: "welmate-admin@kaon.com" },
+  handlesPersonalData: true,
+  allowedGroups: ["welmate-admins", "people-group"],
+  dataSources: ["직원 명단·조직도 (hr 스키마, 접근 격리)", "MS Graph (Outlook 메일 초안)", "설문 시스템"],
+  tools: [
+    { name: "get_onboarding_status", desc: "온보딩 단계별 진행 현황 집계 (개인 식별 정보 미포함)", input: [["month",0]], output: ["counts","upcomingDeadlines[]"] },
+    { name: "draft_assignment_mail", desc: "소속 팀장 앞 웰메이트 선정 요청 메일 초안 (입사자 정보·마감일·선정 기준 자동 삽입) — 발송은 승인 후", approval: true, input: [["hireId",1],["deadline",0]], output: ["draftId","approvalUrl"] },
+    { name: "create_end_survey", desc: "프로그램 종료 시점 엔드서베이 링크 생성·회수 추적 시작 (입사자·웰메이트 각 1부)", input: [["hireId",1]], output: ["surveyIds[]","dueDate"] },
+    { name: "compile_payment_list", desc: "3개월분 활동비 지급 대상을 법인별 집계 — 지급 확정은 승인 후, 상세 명단은 권한자만", approval: true, input: [["month",1]], output: ["byEntity[]","listUrl"] },
+    { name: "analyze_survey_results", desc: "엔드서베이 결과 분석 — 만족도 추이·개선 키워드 리포트 초안 (자유응답은 익명화)", input: [["period",1]], output: ["satisfactionTrend[]","topKeywords[]","reportDraft"] }
+  ],
+  events: [
+    { name: "welmate.survey_due", desc: "서베이 마감 D-3 미제출 건 발생 시 리마인드 초안 링크와 함께 발행", ch: ["teams"] },
+    { name: "welmate.payment_ready", desc: "월간 활동비 집계 완료 시 담당자 확인 요청", ch: ["teams","email"] }
+  ],
+  jobs: [
+    { name: "new_hire_watch", cron: "0 9 * * 1-5", desc: "평일 09시: 신규입사자 등록 감지 → 팀장 조회 → 메일 초안 생성" },
+    { name: "monthly_payment_compile", cron: "0 9 20 * *", desc: "매월 20일 09시: 활동비 대상 집계 → 확인 요청 발행" }
+  ]
+}
+];
+
+// ── 렌더링 ──
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+const totals = {
+  agents: AGENTS.length,
+  tools: AGENTS.reduce((n,a)=>n+a.tools.length,0),
+  jobs: AGENTS.reduce((n,a)=>n+a.jobs.length,0),
+  events: AGENTS.reduce((n,a)=>n+a.events.length,0),
+  approvals: AGENTS.reduce((n,a)=>n+a.tools.filter(t=>t.approval).length,0)
+};
+document.getElementById('summary').innerHTML = `
+  <div class="stat-tile"><div class="n">${totals.agents}</div><div class="l">등록된 Agent</div></div>
+  <div class="stat-tile"><div class="n">${totals.tools}</div><div class="l">도구 (부탁하면 하는 일)</div></div>
+  <div class="stat-tile"><div class="n">${totals.jobs}</div><div class="l">자동 작업 (알아서 하는 일)</div></div>
+  <div class="stat-tile"><div class="n">${totals.events}</div><div class="l">먼저 알리는 알림</div></div>
+  <div class="stat-tile"><div class="n">${totals.approvals}</div><div class="l">사람 승인 필수 기능</div></div>`;
+
+document.getElementById('agents').innerHTML = AGENTS.map(a => `
+<div class="agent-card ${a.theme}">
+  <div class="agent-head">
+    <div class="avatar">${a.icon}</div>
+    <div class="id">
+      <div class="nm">${esc(a.displayName)} <code>${esc(a.name)}</code></div>
+      <div class="meta">담당: ${esc(a.owner.team)} · ${esc(a.owner.contact)}</div>
+      <div class="desc">${esc(a.description)}</div>
+    </div>
+    <div class="badges-row">
+      <span class="b ver">v${esc(a.version)}</span>
+      ${a.handlesPersonalData ? '<span class="b pii">🔐 개인정보 취급</span>' : ''}
+      ${a.allowedGroups ? `<span class="b">사용 제한: ${a.allowedGroups.map(esc).join(', ')}</span>` : '<span class="b">전 임직원 사용 가능</span>'}
+    </div>
+  </div>
+  <div class="agent-body">
+    <div class="sec-t">💬 도구 — 부탁하면 하는 일 <span class="cnt">${a.tools.length}</span></div>
+    <div class="tool-table-scroll"><table>
+      <tr><th style="width:24%">기능</th><th>설명</th><th style="width:22%">입력</th><th style="width:20%">돌려주는 것</th></tr>
+      ${a.tools.map(t => `
+      <tr>
+        <td><code>${esc(t.name)}</code>${t.approval ? '<span class="approval">🔒 승인 필요</span>' : ''}</td>
+        <td>${esc(t.desc)}</td>
+        <td>${t.input.map(([k,req]) => `<span class="chip${req?' req':''}">${esc(k)}${req?' *':''}</span>`).join('')}</td>
+        <td>${t.output.map(k => `<span class="chip">${esc(k)}</span>`).join('')}</td>
+      </tr>`).join('')}
+    </table></div>
+
+    <div class="sec-t">⚙️ 자동 작업 — 알아서 하는 일 <span class="cnt">${a.jobs.length}</span></div>
+    <div class="list-cards">
+      ${a.jobs.map(j => `<div class="mini"><div class="mt"><code>${esc(j.name)}</code><span class="sched">${esc(j.cron)}</span></div><div class="md">${esc(j.desc)}</div></div>`).join('')}
+    </div>
+
+    <div class="sec-t">🔔 먼저 알리는 알림 <span class="cnt">${a.events.length}</span></div>
+    <div class="list-cards">
+      ${a.events.map(e => `<div class="mini"><div class="mt"><code>${esc(e.name)}</code>${e.ch.map(c=>`<span class="chip">${c === 'teams' ? 'Teams' : '메일'}</span>`).join('')}</div><div class="md">${esc(e.desc)}</div></div>`).join('')}
+    </div>
+
+    <div class="sec-t">🗄 들여다보는 데이터</div>
+    <div class="badges-row">${a.dataSources.map(d => `<span class="b">${esc(d)}</span>`).join('')}</div>
+  </div>
+</div>`).join('');
+
+function toggleTheme() {
+  const r = document.documentElement;
+  const cur = r.getAttribute('data-theme') ||
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+</script>
