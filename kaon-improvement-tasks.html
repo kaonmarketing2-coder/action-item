@@ -16,6 +16,10 @@
   --lever-comm: #C07A1F;
   --lever-skill: #2E8B74;
   --lever-role: #7B5EA7;
+  --tf-cont: #2E7D57;
+  --tf-short: #C2622C;
+  --tf-mid: #3D5A99;
+  --tf-hold: #8494A8;
   --shadow: 0 1px 2px rgba(28,38,53,.08), 0 4px 14px rgba(28,38,53,.07);
   --shadow-lift: 0 6px 24px rgba(28,38,53,.18);
   --radius: 10px;
@@ -37,6 +41,10 @@
     --lever-comm: #D99A45;
     --lever-skill: #4BAE94;
     --lever-role: #9F84C9;
+    --tf-cont: #3F9E72;
+    --tf-short: #D97E48;
+    --tf-mid: #6580C2;
+    --tf-hold: #6E7E92;
     --shadow: 0 1px 2px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.3);
     --shadow-lift: 0 6px 24px rgba(0,0,0,.5);
   }
@@ -47,6 +55,7 @@
   --navy: #33415C; --navy-ink: #FFFFFF;
   --accent: #B4256E; --accent-soft: #F7E4EE;
   --lever-formal: #4A7BA6; --lever-comm: #C07A1F; --lever-skill: #2E8B74; --lever-role: #7B5EA7;
+  --tf-cont: #2E7D57; --tf-short: #C2622C; --tf-mid: #3D5A99; --tf-hold: #8494A8;
   --shadow: 0 1px 2px rgba(28,38,53,.08), 0 4px 14px rgba(28,38,53,.07);
   --shadow-lift: 0 6px 24px rgba(28,38,53,.18);
 }
@@ -56,6 +65,7 @@
   --navy: #3E4F70; --navy-ink: #EAF0F8;
   --accent: #E0559B; --accent-soft: #3A2231;
   --lever-formal: #6FA0CC; --lever-comm: #D99A45; --lever-skill: #4BAE94; --lever-role: #9F84C9;
+  --tf-cont: #3F9E72; --tf-short: #D97E48; --tf-mid: #6580C2; --tf-hold: #6E7E92;
   --shadow: 0 1px 2px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.3);
   --shadow-lift: 0 6px 24px rgba(0,0,0,.5);
 }
@@ -207,8 +217,21 @@ main { padding: 20px 24px 60px; max-width: 1480px; margin: 0 auto; }
 .prio-top h3 { font-size: 13.5px; font-weight: 700; margin: 0; }
 .tf-chip {
   font-size: 10.5px; font-weight: 700; border-radius: 20px; padding: 0 8px; line-height: 17px;
-  color: var(--navy-ink); background: var(--navy);
+  color: #fff; background: var(--navy);
 }
+.tf-chip.tf-cont  { background: var(--tf-cont); }
+.tf-chip.tf-short { background: var(--tf-short); }
+.tf-chip.tf-mid   { background: var(--tf-mid); }
+.tf-chip.tf-hold  { background: var(--tf-hold); }
+.prio-item.hold {
+  background: var(--surface-2); border-style: dashed;
+  filter: grayscale(.6); opacity: .85;
+}
+.prio-item.hold .prio-rank { background: var(--surface-2); color: var(--ink-3); }
+.prio-item.hold h3 { color: var(--ink-2); }
+.prio-item:hover { box-shadow: var(--shadow-lift); }
+.prio-item .edit-hint { position: absolute; right: 10px; bottom: 8px; font-size: 10px; color: var(--ink-3); opacity: 0; transition: opacity .15s; }
+.prio-item:hover .edit-hint { opacity: 1; }
 .prio-depts { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
 .prio-why {
   font-size: 12px; color: var(--ink-2); margin-top: 5px;
@@ -349,13 +372,13 @@ tr:nth-child(even) td { background: var(--surface-2); }
 
 <main>
   <section class="view active" id="view-board">
-    <p class="hint"><b>드래그</b>로 과제를 단기 · 중장기 · 지속 · 미진행 열 사이에서 이동하고, <b>클릭</b>하면 과제명과 상세 내용을 편집할 수 있습니다.</p>
+    <p class="hint"><b>드래그</b>로 과제를 지속 · 단기 · 중장기 · 미진행 열 사이에서 이동하고, <b>클릭</b>하면 과제명과 상세 내용을 편집할 수 있습니다.</p>
     <div class="legend" id="legend"></div>
     <div class="board" id="board"></div>
   </section>
 
   <section class="view" id="view-prio">
-    <p class="hint"><b>드래그</b>로 순서를 바꾸면 우선순위(1~14위)가 다시 매겨집니다. 상위 3개 과제는 강조 표시됩니다.</p>
+    <p class="hint"><b>드래그</b>로 순서를 바꾸면 우선순위(1~14위)가 다시 매겨지고, <b>클릭</b>하면 과제 세부 내용을 보고 편집할 수 있습니다. 상위 3개 과제는 강조, 미진행 과제는 회색으로 표시됩니다.</p>
     <div class="prio-list" id="prioList"></div>
   </section>
 
@@ -400,9 +423,9 @@ tr:nth-child(even) td { background: var(--surface-2); }
     <div class="field">
       <label for="mTimeframe">시기 분류</label>
       <select id="mTimeframe">
+        <option value="cont">지속 (상시 운영)</option>
         <option value="short">단기 (0~6개월)</option>
         <option value="mid">중장기 (6개월~2년+)</option>
-        <option value="cont">지속 (상시 운영)</option>
         <option value="hold">미진행 (보류/추진 제외)</option>
       </select>
     </div>
@@ -465,10 +488,11 @@ const LEVERS = {
   skill:  { name: "변화를 위해 필요한 스킬", cssVar: "--lever-skill" },
   role:   { name: "롤 모델링",         cssVar: "--lever-role" },
 };
+// 객체 순서가 보드 열 순서를 결정
 const TIMEFRAMES = {
+  cont:  { name: "지속",   range: "상시 운영" },
   short: { name: "단기",   range: "0~6개월" },
   mid:   { name: "중장기", range: "6개월~2년+" },
-  cont:  { name: "지속",   range: "상시 운영" },
   hold:  { name: "미진행", range: "보류/추진 제외" },
 };
 
@@ -873,19 +897,20 @@ function renderBoard() {
 function renderPrio() {
   const list = document.getElementById("prioList");
   list.innerHTML = state.priority.map((id, i) => {
+    const tfKey = timeframeOf(id);
     const t = state.tasks[id];
-    const tf = TIMEFRAMES[timeframeOf(id)];
     return `
-      <div class="prio-item ${i < 3 ? "top3" : ""}" draggable="true" data-id="${id}" tabindex="0">
+      <div class="prio-item ${i < 3 ? "top3" : ""} ${tfKey === "hold" ? "hold" : ""}" draggable="true" data-id="${id}" tabindex="0">
         <div class="prio-rank">${i + 1}</div>
         <div class="prio-main" style="--lever-c:var(${LEVERS[t.lever].cssVar})">
           <div class="prio-top">
             <span class="num">${t.num}</span>
             <h3>${esc(t.title)}</h3>
-            <span class="tf-chip">${tf.name}</span>
+            <span class="tf-chip tf-${tfKey}">${TIMEFRAMES[tfKey].name}</span>
           </div>
           <div class="prio-depts">${t.depts.map(esc).join(" · ")}</div>
           ${t.rationale ? `<div class="prio-why">${esc(t.rationale)}</div>` : ""}
+          <span class="edit-hint">클릭하여 편집</span>
         </div>
       </div>`;
   }).join("");
@@ -1010,13 +1035,14 @@ let editingId = null;
 
 document.addEventListener("click", e => {
   if (suppressClick) return;
-  const card = e.target.closest(".card");
+  const card = e.target.closest(".card, .prio-item");
   if (card) openModal(Number(card.dataset.id));
 });
 document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && document.activeElement && document.activeElement.classList &&
-      document.activeElement.classList.contains("card")) {
-    openModal(Number(document.activeElement.dataset.id));
+  const el = document.activeElement;
+  if (e.key === "Enter" && el && el.classList &&
+      (el.classList.contains("card") || el.classList.contains("prio-item"))) {
+    openModal(Number(el.dataset.id));
   }
   if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
 });
