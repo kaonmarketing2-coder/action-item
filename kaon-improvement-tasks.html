@@ -290,8 +290,17 @@ tr:nth-child(even) td { background: var(--surface-2); }
 .mgr-del {
   border: none; background: none; color: var(--ink-3); font-size: 16px;
   cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 5px;
+  flex-shrink: 0;
 }
 .mgr-del:hover { color: #C0392B; background: var(--surface); }
+.mgr-del.confirm {
+  background: #C0392B; color: #fff; font-size: 11.5px; font-weight: 700;
+  padding: 4px 10px; font-family: inherit;
+}
+.mgr-del.confirm:hover { background: #A93226; color: #fff; }
+.mgr-row .use-count.warn { color: #C0392B; font-weight: 600; }
+.btn.danger.armed { background: #C0392B; border-color: #C0392B; color: #fff; }
+.btn.danger.armed:hover { background: #A93226; color: #fff; }
 .mgr-empty { color: var(--ink-3); font-size: 12.5px; text-align: center; padding: 14px 0; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn.primary:hover { filter: brightness(1.08); color: #fff; }
@@ -1106,6 +1115,9 @@ const deptOverlay = document.getElementById("deptOverlay");
 function deptUsage(name) {
   return Object.values(state.tasks).filter(t => t.depts.includes(name)).length;
 }
+// 아티팩트 샌드박스에서는 confirm() 팝업이 차단되므로 2단계 클릭으로 삭제 확인
+let confirmingDept = null;
+let confirmingTimer = null;
 function renderDeptMgr() {
   const list = document.getElementById("deptMgrList");
   if (!state.departments.length) {
@@ -1114,16 +1126,22 @@ function renderDeptMgr() {
   }
   list.innerHTML = state.departments.map(d => {
     const n = deptUsage(d);
+    const confirming = confirmingDept === d;
+    const count = confirming
+      ? (n ? `${n}개 과제에서 함께 제거됩니다` : "삭제하려면 한 번 더 클릭")
+      : (n ? `${n}개 과제에서 사용 중` : "미사용");
     return `
       <div class="mgr-row">
         <span>${esc(d)}</span>
-        <span class="use-count">${n ? `${n}개 과제에서 사용 중` : "미사용"}</span>
-        <button class="mgr-del" data-dept="${esc(d)}" aria-label="${esc(d)} 삭제">×</button>
+        <span class="use-count ${confirming ? "warn" : ""}">${count}</span>
+        <button class="mgr-del ${confirming ? "confirm" : ""}" data-dept="${esc(d)}"
+          aria-label="${esc(d)} 삭제">${confirming ? "삭제 확인" : "×"}</button>
       </div>`;
   }).join("");
 }
 
 document.getElementById("btnDepts").addEventListener("click", () => {
+  confirmingDept = null;
   renderDeptMgr();
   document.getElementById("dNewDept").value = "";
   deptOverlay.classList.add("open");
@@ -1151,11 +1169,17 @@ document.getElementById("deptMgrList").addEventListener("click", e => {
   const btn = e.target.closest(".mgr-del");
   if (!btn) return;
   const name = btn.dataset.dept;
-  const n = deptUsage(name);
-  const msg = n
-    ? `'${name}' 부서를 삭제하면 ${n}개 과제에서도 함께 제거됩니다. 삭제할까요?`
-    : `'${name}' 부서를 삭제할까요?`;
-  if (!confirm(msg)) return;
+  if (confirmingDept !== name) {
+    // 1단계: 삭제 확인 상태로 전환 (4초 내 재클릭 시 삭제)
+    confirmingDept = name;
+    clearTimeout(confirmingTimer);
+    confirmingTimer = setTimeout(() => { confirmingDept = null; renderDeptMgr(); }, 4000);
+    renderDeptMgr();
+    return;
+  }
+  // 2단계: 실제 삭제
+  clearTimeout(confirmingTimer);
+  confirmingDept = null;
   state.departments = state.departments.filter(d => d !== name);
   Object.values(state.tasks).forEach(t => { t.depts = t.depts.filter(d => d !== name); });
   pendingDepts.delete(name);
@@ -1193,18 +1217,41 @@ document.getElementById("fileImport").addEventListener("change", e => {
       state = migrate(parsed);
       saveState(); renderAll();
     } catch (err) {
-      alert("가져오기에 실패했습니다. 이 도구에서 내보낸 JSON 파일인지 확인해 주세요.");
+      notice("가져오기 실패 — 이 도구에서 내보낸 JSON인지 확인하세요");
     }
   };
   reader.readAsText(file);
   e.target.value = "";
 });
 document.getElementById("btnPrint").addEventListener("click", () => window.print());
-document.getElementById("btnReset").addEventListener("click", () => {
-  if (confirm("모든 편집 내용을 버리고 초기 제안값으로 되돌립니다. 계속할까요?")) {
-    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-    saveState(); renderAll();
+
+// 알림 팝업 대체: 저장 상태 표시 영역에 메시지 노출
+function notice(msg) {
+  const el = document.getElementById("saveState");
+  el.textContent = msg;
+  el.style.color = "#C0392B";
+  clearTimeout(notice._t);
+  notice._t = setTimeout(() => { el.style.color = ""; el.textContent = "자동 저장 켜짐"; }, 4000);
+}
+
+// 초기화도 2단계 클릭 확인 (샌드박스에서 confirm() 차단)
+const btnReset = document.getElementById("btnReset");
+let resetTimer = null;
+btnReset.addEventListener("click", () => {
+  if (!btnReset.classList.contains("armed")) {
+    btnReset.classList.add("armed");
+    btnReset.textContent = "정말 초기화? (모든 편집 삭제)";
+    resetTimer = setTimeout(() => {
+      btnReset.classList.remove("armed");
+      btnReset.textContent = "초기화";
+    }, 4000);
+    return;
   }
+  clearTimeout(resetTimer);
+  btnReset.classList.remove("armed");
+  btnReset.textContent = "초기화";
+  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  saveState(); renderAll();
 });
 
 renderAll();
