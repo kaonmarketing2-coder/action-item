@@ -500,6 +500,29 @@ tr:nth-child(even) td { background: var(--surface-2); }
   </div>
 </div>
 
+<div class="overlay" id="dataOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="xTitle">
+    <div class="modal-head">
+      <h2 id="xTitle">데이터 내보내기 / 가져오기</h2>
+      <button class="close-x" id="xClose" aria-label="닫기">×</button>
+    </div>
+    <p class="lever-line">아래 내용을 <b>복사</b>해서 전달하면 받은 사람이 이 창에 <b>붙여넣고 적용</b>하는 것으로 동일한 상태를 볼 수 있습니다.</p>
+    <div class="field">
+      <textarea id="dataText" rows="12" spellcheck="false" style="font-family:ui-monospace,Consolas,monospace;font-size:11.5px" placeholder="가져오기: 전달받은 JSON을 여기에 붙여넣고 '붙여넣은 내용 적용'을 누르세요."></textarea>
+    </div>
+    <div class="modal-actions" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span style="display:flex;gap:8px">
+        <button class="btn" id="xCopy">클립보드에 복사</button>
+        <button class="btn" id="xDownload">파일로 다운로드</button>
+      </span>
+      <span style="display:flex;gap:8px">
+        <button class="btn" id="xFile">파일에서 가져오기</button>
+        <button class="btn primary" id="xApply">붙여넣은 내용 적용</button>
+      </span>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="deptOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dTitle">
     <div class="modal-head">
@@ -1389,29 +1412,70 @@ document.querySelectorAll(".tab").forEach(tab => {
 });
 
 /* ── Toolbar ───────────────────────── */
-document.getElementById("btnExport").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+// 내보내기/가져오기: 샌드박스에서 파일 다운로드가 차단될 수 있어 복사/붙여넣기 방식을 기본으로 제공
+const dataOverlay = document.getElementById("dataOverlay");
+const dataText = document.getElementById("dataText");
+
+function openDataModal(withExport) {
+  dataText.value = withExport ? JSON.stringify(state, null, 2) : "";
+  dataOverlay.classList.add("open");
+  if (withExport) { dataText.focus(); dataText.select(); }
+  else dataText.focus();
+}
+document.getElementById("btnExport").addEventListener("click", () => openDataModal(true));
+document.getElementById("btnImport").addEventListener("click", () => openDataModal(false));
+document.getElementById("xClose").addEventListener("click", () => dataOverlay.classList.remove("open"));
+dataOverlay.addEventListener("click", e => { if (e.target === dataOverlay) dataOverlay.classList.remove("open"); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && dataOverlay.classList.contains("open")) dataOverlay.classList.remove("open");
+});
+
+document.getElementById("xCopy").addEventListener("click", async () => {
+  if (!dataText.value) dataText.value = JSON.stringify(state, null, 2);
+  dataText.focus(); dataText.select();
+  let ok = false;
+  try { await navigator.clipboard.writeText(dataText.value); ok = true; }
+  catch (e) { try { ok = document.execCommand("copy"); } catch (e2) {} }
+  const btn = document.getElementById("xCopy");
+  btn.textContent = ok ? "복사됨 ✓" : "Ctrl+C로 복사하세요";
+  setTimeout(() => { btn.textContent = "클립보드에 복사"; }, 2000);
+});
+
+document.getElementById("xDownload").addEventListener("click", () => {
+  if (!dataText.value) dataText.value = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataText.value], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "kaon-improvement-tasks.json";
   a.click();
   URL.revokeObjectURL(a.href);
+  notice("다운로드가 시작되지 않으면 '클립보드에 복사'를 이용하세요");
 });
-document.getElementById("btnImport").addEventListener("click", () => document.getElementById("fileImport").click());
+
+function applyImportedText(text) {
+  try {
+    const parsed = JSON.parse(text);
+    if (!parsed.tasks || !parsed.columns || !parsed.priority) throw new Error("형식 오류");
+    state = migrate(parsed);
+    saveState(); renderAll();
+    dataOverlay.classList.remove("open");
+    notice("가져오기 완료 ✓");
+    return true;
+  } catch (err) {
+    notice("가져오기 실패 — 이 도구에서 내보낸 JSON인지 확인하세요");
+    return false;
+  }
+}
+document.getElementById("xApply").addEventListener("click", () => {
+  if (!dataText.value.trim()) { notice("붙여넣은 내용이 없습니다"); return; }
+  applyImportedText(dataText.value);
+});
+document.getElementById("xFile").addEventListener("click", () => document.getElementById("fileImport").click());
 document.getElementById("fileImport").addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const parsed = JSON.parse(reader.result);
-      if (!parsed.tasks || !parsed.columns || !parsed.priority) throw new Error("형식 오류");
-      state = migrate(parsed);
-      saveState(); renderAll();
-    } catch (err) {
-      notice("가져오기 실패 — 이 도구에서 내보낸 JSON인지 확인하세요");
-    }
-  };
+  reader.onload = () => applyImportedText(reader.result);
   reader.readAsText(file);
   e.target.value = "";
 });
