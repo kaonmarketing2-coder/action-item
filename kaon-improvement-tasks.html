@@ -544,10 +544,10 @@ function monthSpan(from, to) {
 }
 
 const DEFAULT_STATE = {
-  dataVersion: 6,
+  dataVersion: 7,
   tasks: {
     1:  { num: 1,  lever: "formal", title: "전사/단위 조직 전략 방향성 구체화", desc: "",
-          depts: ["기획", "경영진", "B&C파트"],
+          depts: ["기획", "경영진", "B&C"],
           issues: [
             "비전·방향성이 CEO와 일부 Staff·리더 대상으로만 한정 소통되어 구성원 간 해석이 상이함",
             "주력(셋탑) 사업의 사양화가 인식되는 가운데 대체할 비전이 명확히 제시되지 못해 개발 인력의 불안으로 연결",
@@ -566,7 +566,7 @@ const DEFAULT_STATE = {
           refs: "A사 — 전략 피보팅 시 구성원 공감 과정을 통한 구조조정·리더십 변화 합의 사례",
           rationale: "진단 Top4 1번 이슈 '전략 방향성 부재로 Alignment 저해'의 직접 해법이자 대부분 과제의 전제 — 최우선 착수" },
     2:  { num: 2,  lever: "formal", title: "미래성장 동력 확보를 위한 Staff 조직 고도화", desc: "전략/기획/투자 등",
-          depts: ["기획", "경영진", "B&C파트"],
+          depts: ["기획", "경영진", "B&C"],
           issues: [
             "CEO를 지원하여 중장기 사업 방향을 설정하고 지속 추진할 전문가 부재",
             "지속 성장 관점의 포트폴리오 관리·리스크 대응 기능 미흡",
@@ -586,7 +586,7 @@ const DEFAULT_STATE = {
           refs: "현대오토에버(전략/DX 리더 영입), SK㈜(글로벌 사업 4대 성장 전문가 영입), 동원산업(전략기획 인재 영입)",
           rationale: "효과는 중장기적이나 #1을 실행할 역량 기반 — 영입 리드타임을 감안해 조기 착수하되 완성은 중장기" },
     3:  { num: 3,  lever: "comm", title: "비전/전략 Cascading 워크숍", desc: "",
-          depts: ["기획", "인사(HR)", "각 조직 리더", "B&C파트"],
+          depts: ["기획", "인사(HR)", "각 조직 리더", "B&C"],
           issues: [
             "전사 미션/비전을 담당 업무와 연계해 해석·전달하는 리더 역할이 미흡해 업무 몰입 저해",
             "방향성 인식이 상위 직책에서는 비교적 명확하나 하위 직책/구성원 Level로 갈수록 옅어짐",
@@ -606,7 +606,7 @@ const DEFAULT_STATE = {
           refs: "SK머티리얼즈 — 직책자 전체 대상 비전/전략 Cascading 워크숍, AI 활용 비전 Visualization",
           rationale: "방향성 부재 해소의 실행 단계 — #1과 사실상 하나의 연속 프로그램. #1 진행 중 준비를 병행하고 상위 계층부터 순차 전개" },
     4:  { num: 4,  lever: "comm", title: "전사 타운홀 정례화 및 소통 메시지 재정립", desc: "",
-          depts: ["커뮤니케이션/경영지원", "CEO", "B&C파트"],
+          depts: ["커뮤니케이션/경영지원", "CEO", "B&C"],
           issues: [
             "CEO-구성원 소통 채널이 간헐적/제한적(신년사 수준)이고, 공지 불규칙성으로 구성원 불안감·불만 조성",
             "의견 수렴 가능한 공식 창구 부재로 블라인드 등 비공식 채널에 의존해 구성원 정서를 확인하는 한계",
@@ -624,7 +624,7 @@ const DEFAULT_STATE = {
           refs: "크래프톤 KLT(월례 실명 Q&A), 뱅크샐러드 Pit Stop, 컬리 월례 타운홀, 토스 Alignment Day/Week",
           rationale: "즉시 실행 가능한 Quick win — N사 사례처럼 방향성+소통 집중이 1년 내 개선을 견인, 침묵·불안 이슈에 직접 대응" },
     5:  { num: 5,  lever: "skill", title: "리더 역량 제고/육성 프로그램", desc: "자기·역할인식, 코칭/피드백, 권한위임 등",
-          depts: ["인사(HR)", "B&C파트"],
+          depts: ["인사(HR)", "B&C"],
           issues: [
             "리더의 성과 드라이브는 작동하나 그 외 리더십 활동(구성원 코칭, 도전 촉진 등)이 미약해 효과적 리더십으로 체감되지 못함",
             "'바람직한 역할과 역량'에 대한 공통 정의·기준이 없어 리더 스스로 보완점을 파악하기 어렵고 평가·피드백·육성의 준거점도 부재",
@@ -643,7 +643,7 @@ const DEFAULT_STATE = {
           refs: "교보생명(성과관리 프로세스 연계 코칭형 리더 육성), CTR·퍼시스(평가제도 개편 연계 코칭/피드백 교육)",
           rationale: "리더십의 구조적 개선 수단 — 기준(#6)과 진단(#7)이 갖춰진 뒤 본격화하고 이후 상시 운영" },
     6:  { num: 6,  lever: "role", title: "리더십 Credo 수립", desc: "",
-          depts: ["경영진", "인사(HR)", "B&C파트"],
+          depts: ["경영진", "인사(HR)", "B&C"],
           issues: [
             "구성원 인정 부족, Boss-oriented, 의견 차단, 책임 회피·자기방어 등 부정적 리더 행동이 타사 대비 매우 높은 빈도로 확인",
             "바람직한/지양할 행동 guide가 부재해 리더가 각자의 경험(과거 질책·성과 Drive 중심)에 의존, 부정적 행동이 재생산·고착",
@@ -662,7 +662,7 @@ const DEFAULT_STATE = {
           refs: "구글 리더 6 Checklist(심리적 안전감), Meta 10 Manager Behaviors, 토스 PO 7 Key Skillset",
           rationale: "리더십 개입 전체(#7 진단 → #5 육성)의 기준점 — 단기간 수립 가능하면서 파급 효과가 큼" },
     7:  { num: 7,  lever: "role", title: "리더십 Capacity 진단 및 Gap closing 전략 수립", desc: "",
-          depts: ["인사(HR)", "외부 전문기관", "B&C파트"],
+          depts: ["인사(HR)", "외부 전문기관", "B&C"],
           issues: [
             "리더십 역할·역량에 대한 객관적 진단·피드백 기회가 부재해 리더가 자신의 강·약점과 성장 방향을 잡을 근거 부족",
             "조직별 리더십 편차가 큰데도 개인별 Gap을 파악·관리하지 못해 일괄적/획일적으로 접근",
@@ -682,7 +682,7 @@ const DEFAULT_STATE = {
           refs: "이머징 리더십 역량 Framework(진정성·시장주도·기민한 대응·내재적 동기부여), Leadership 9 Box Bench 전략",
           rationale: "'직관 의존 리더 선발' 이슈의 구조적 해법 — 1차 진단은 단기 착수 가능하나 정례화·Bench 전략까지는 중장기" },
     8:  { num: 8,  lever: "formal", title: "전략 방향성과 Align된 조직 R&R 명확화/명문화", desc: "",
-          depts: ["기획", "인사(HR)", "B&C파트"],
+          depts: ["기획", "인사(HR)", "B&C"],
           issues: [
             "조직별 역할·책임 경계가 모호해 Grey Zone 업무를 아무도 책임지지 않고, 먼저 나선 사람이 떠안는 구조 고착",
             "책임 소재가 불명확해 무차별 메일 참조·책임 전가 관행 일상화",
@@ -702,7 +702,7 @@ const DEFAULT_STATE = {
           refs: "당근마켓·Grow&Better — Notion 기반 조직별 R&R 실시간 공유·주기적 업데이트",
           rationale: "'관망이 합리적 선택'이 된 구조를 깨는 핵심 — 기존 PI RACI 작업과 연계해 빠른 착수 가능" },
     9:  { num: 9,  lever: "formal", title: "혁신의 실행을 지원할 조직구조 검토", desc: "",
-          depts: ["기획", "경영진", "B&C파트"],
+          depts: ["기획", "경영진", "B&C"],
           issues: [
             "조직이 과도하게 세분화되어 다단의 관리 단계가 존재하는 반면 실무 인력은 상대적으로 부족 — 운영 효율성 저하",
             "부서 간 R&R 모호로 업무 추진·신규 이슈 발생 시 판단과 실행 지연",
@@ -722,7 +722,7 @@ const DEFAULT_STATE = {
           refs: "신한라이프(애자일+Backbone 양손잡이 조직), LG유플러스(CDO 중심 Agile 재편), 토스(제품 성장 단계별 구조 진화)",
           rationale: "파급이 크고 되돌리기 어려운 과제 — R&R 정비(#8)와 전략 확정(#1) 후 신중히 추진" },
     10: { num: 10, lever: "formal", title: "전사 협업 및 정보 공유 시스템 도입", desc: "",
-          depts: ["IT/정보시스템", "기획", "B&C파트"],
+          depts: ["IT/정보시스템", "기획", "B&C"],
           issues: [
             "협업 담당자 확인에 여러 단계를 거치는 비효율, 팀 간 정보 격차 존재",
             "신사업에 대한 정보공유가 제한적이어서 구성원이 회사의 미래에 대한 기대감을 낮게 인식",
@@ -739,7 +739,7 @@ const DEFAULT_STATE = {
           refs: "당근마켓 — Notion 기반 전사 위키로 팀 간 정보 격차 해소 (※ 상세 페이지는 원본 자료 미포함, #8 벤치마크 준용)",
           rationale: "#8 산출물(R&R 정의서)의 기술 기반이자 정보 격차 해소 수단 — R&R 정착과 함께 추진" },
     11: { num: 11, lever: "formal", title: "비효율 업무 파악 및 간소화/폐지", desc: "",
-          depts: ["전사 TF", "각 부서", "B&C파트"],
+          depts: ["전사 TF", "각 부서", "B&C"],
           issues: [
             "무차별 메일 참조, 결론 없는 회의 등 책임 분산 관행이 직급을 막론한 조직 전반의 관성으로 자리 잡음",
             "보고/회의/야근 등 비효율적 업무 방식 상존 (#14 과제의 개선 대상과 동일)",
@@ -756,7 +756,7 @@ const DEFAULT_STATE = {
           refs: "신한라이프 — 불필요한 관료적 의사결정·의전·과도한 보고서를 의도적/계획적으로 찾아내 제거 (※ 상세 페이지는 원본 자료 미포함)",
           rationale: "Quick win — 구성원이 즉시 체감하는 관행 개선으로 변화 동력 확보, #14의 선행 실행" },
     12: { num: 12, lever: "formal", title: "건전한 경쟁·동기부여·투명성 관점 HR제도 개선", desc: "레벨제 고도화 포함",
-          depts: ["인사(HR)", "B&C파트"],
+          depts: ["인사(HR)", "B&C"],
           issues: [
             "평가 기준과 결과가 비공개로 운영되어 구성원의 노력/성과가 차등보상으로 연결되지 못하며 사기 저하 야기",
             "위기 대응을 명분으로 한 보상 억제와 경영진과의 보상 격차 누적 — 시장 내 가온의 처우·성장 매력도 하락",
@@ -774,7 +774,7 @@ const DEFAULT_STATE = {
           refs: "CTR(평가체계 개선+5년간 리더 코칭/피드백 교육), 퍼시스(신평가제도 전환 시 팀장 성과관리 역량 제고) (※ 상세 페이지는 원본 자료 미포함, 진단 시사점 기반 보강)",
           rationale: "진단 Top4 4번 이슈 '작동하지 않는 평가·보상' 직접 대응 — 민감도가 높아 의견수렴을 거쳐 중장기 추진" },
     13: { num: 13, lever: "formal", title: "Retention·동기부여 관점 핵심인재 관리제도 개선", desc: "육성/보상 등",
-          depts: ["인사(HR)", "B&C파트"],
+          depts: ["인사(HR)", "B&C"],
           issues: [
             "좋은 성과·노력이 인정·보상으로 돌아오지 않는 상황에서 우수 인재를 붙잡을 동기 기반이 약화",
             "중간 리더가 판단/결정 경험을 축적하지 못하는 학습된 수동성 — 차세대 리더·허리층 공백의 근본 원인",
@@ -792,7 +792,7 @@ const DEFAULT_STATE = {
           refs: "※ 상세 페이지는 원본 자료 미포함 — 진단 시사점(허리층 공백·우수인재 유지 기반 약화) 기반 보강",
           rationale: "허리층 공백과 인재 이탈 리스크 대응 — #12 제도 개선·#7 Bench 전략과 정합 추진" },
     14: { num: 14, lever: "role", title: "가온만의 일하는 방식 구체화 및 내재화", desc: "보고/회의/야근 등 비효율 개선, 케티튜드(K-attitude)의 행동 단위 구체화 및 제도 연계",
-          depts: ["인사(HR)", "조직문화 TF", "B&C파트"],
+          depts: ["인사(HR)", "조직문화 TF", "B&C"],
           issues: [
             "무차별 메일 참조·결론 없는 회의 등 책임 분산 관행이 조직 전반의 관성으로 고착",
             "케티튜드(K-attitude)가 추상적 가치 수준에 머물러 행동으로 연결되지 못함",
@@ -811,7 +811,7 @@ const DEFAULT_STATE = {
           rationale: "다른 과제들의 성과를 가온의 문화로 내재화하는 총괄 과제 — 선행 과제 진척과 함께 지속 운영" },
   },
   departments: [
-    "경영진", "CEO", "기획", "B&C파트", "인사(HR)", "커뮤니케이션/경영지원",
+    "경영진", "CEO", "기획", "B&C", "인사(HR)", "커뮤니케이션/경영지원",
     "IT/정보시스템", "전사 TF", "조직문화 TF", "각 조직 리더", "각 부서", "외부 전문기관",
   ],
   columns: {
@@ -868,10 +868,10 @@ function migrate(parsed) {
     // v2: 경영기획 → 기획 이름 변경, B&C파트를 부서 목록과 모든 과제에 추가
     const rename = d => (d === "경영기획" ? "기획" : d);
     parsed.departments = [...new Set(parsed.departments.map(rename))];
-    if (!parsed.departments.includes("B&C파트")) parsed.departments.push("B&C파트");
+    if (!parsed.departments.includes("B&C")) parsed.departments.push("B&C");
     Object.values(parsed.tasks).forEach(t => {
       t.depts = [...new Set(t.depts.map(rename))];
-      if (!t.depts.includes("B&C파트")) t.depts.push("B&C파트");
+      if (!t.depts.includes("B&C")) t.depts.push("B&C");
     });
     parsed.dataVersion = 2;
   }
@@ -906,6 +906,13 @@ function migrate(parsed) {
       }
     });
     parsed.dataVersion = 6;
+  }
+  if (parsed.dataVersion < 7) {
+    // v7: 부서명 B&C파트 → B&C 변경
+    const rn = d => (d === "B&C파트" ? "B&C" : d);
+    parsed.departments = [...new Set(parsed.departments.map(rn))];
+    Object.values(parsed.tasks).forEach(t => { t.depts = [...new Set(t.depts.map(rn))]; });
+    parsed.dataVersion = 7;
   }
   return parsed;
 }
