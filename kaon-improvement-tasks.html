@@ -1612,6 +1612,11 @@ document.querySelectorAll(".tab").forEach(tab => {
 const dataOverlay = document.getElementById("dataOverlay");
 const dataText = document.getElementById("dataText");
 
+// 아티팩트 등 iframe 샌드박스 안에서는 다운로드가 차단되므로 버튼 자체를 숨김
+if (window.self !== window.top) {
+  document.getElementById("xDownload").style.display = "none";
+}
+
 function openDataModal(withExport) {
   dataText.value = withExport ? JSON.stringify(state, null, 2) : "";
   dataOverlay.classList.add("open");
