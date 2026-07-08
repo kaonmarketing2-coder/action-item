@@ -119,8 +119,12 @@ main { padding: 20px 24px 60px; max-width: 1480px; margin: 0 auto; }
 .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
 /* ── Board ─────────────────────────── */
-.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
-@media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
+.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1200px) { .board { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) { .board { grid-template-columns: 1fr; } }
+.col[data-tf="hold"] { border-style: dashed; }
+.col[data-tf="hold"] .col-head { background: var(--ink-3); }
+.col[data-tf="hold"] .card { opacity: .8; }
 .col { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); }
 .col-head {
   background: var(--navy); color: var(--navy-ink);
@@ -336,7 +340,7 @@ tr:nth-child(even) td { background: var(--surface-2); }
 
 <main>
   <section class="view active" id="view-board">
-    <p class="hint"><b>드래그</b>로 과제를 단기 · 중장기 · 지속 열 사이에서 이동하고, <b>클릭</b>하면 시행 부서와 고려사항을 편집할 수 있습니다.</p>
+    <p class="hint"><b>드래그</b>로 과제를 단기 · 중장기 · 지속 · 미진행 열 사이에서 이동하고, <b>클릭</b>하면 과제명과 상세 내용을 편집할 수 있습니다.</p>
     <div class="legend" id="legend"></div>
     <div class="board" id="board"></div>
   </section>
@@ -390,6 +394,7 @@ tr:nth-child(even) td { background: var(--surface-2); }
         <option value="short">단기 (0~6개월)</option>
         <option value="mid">중장기 (6개월~2년+)</option>
         <option value="cont">지속 (상시 운영)</option>
+        <option value="hold">미진행 (보류/추진 제외)</option>
       </select>
     </div>
     <div class="field">
@@ -455,10 +460,11 @@ const TIMEFRAMES = {
   short: { name: "단기",   range: "0~6개월" },
   mid:   { name: "중장기", range: "6개월~2년+" },
   cont:  { name: "지속",   range: "상시 운영" },
+  hold:  { name: "미진행", range: "보류/추진 제외" },
 };
 
 const DEFAULT_STATE = {
-  dataVersion: 4,
+  dataVersion: 5,
   tasks: {
     1:  { num: 1,  lever: "formal", title: "전사/단위 조직 전략 방향성 구체화", desc: "",
           depts: ["기획", "경영진", "B&C파트"],
@@ -732,6 +738,7 @@ const DEFAULT_STATE = {
     short: [1, 3, 8, 6, 11],
     mid:   [7, 12, 13, 2, 10, 9],
     cont:  [4, 5, 14],
+    hold:  [],
   },
   priority: [1, 4, 3, 8, 6, 11, 7, 5, 12, 13, 2, 10, 9, 14],
 };
@@ -784,6 +791,11 @@ function migrate(parsed) {
       parsed.tasks[3].rationale = DEFAULT_STATE.tasks[3].rationale;
     }
     parsed.dataVersion = 4;
+  }
+  if (parsed.dataVersion < 5) {
+    // v5: '미진행' 분류 열 추가
+    if (!Array.isArray(parsed.columns.hold)) parsed.columns.hold = [];
+    parsed.dataVersion = 5;
   }
   return parsed;
 }
